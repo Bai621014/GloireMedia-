@@ -1,7 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  // Permet de déployer sur Vercel même s'il reste de petites alertes de code
+  swcMinify: false, // <-- On ajoute cette ligne pour débloquer StackBlitz !
+  
+  // Permet de déployer sur Vercel/Render même s'il reste de petites alertes de code
   eslint: {
     ignoreDuringBuilds: true,
   },
