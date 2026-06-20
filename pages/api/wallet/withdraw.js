@@ -1,6 +1,6 @@
-Import { calculateLocalBalance } from '../../../services/walletService';
+import { calculateLocalBalance } from '../../../services/walletService';
 import { sendSmsNotification } from '../../../services/infobip';
-import { createPagesServerClient } from '@supabase/auth-helpers-nextjs'; // Exemple pour Next.js
+import { createPagesServerClient } from '@supabase/auth-helpers-nextjs';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -30,12 +30,6 @@ export default async function handler(req, res) {
 
   try {
     // 3. Appel d'une fonction stockée Supabase (RPC) pour gérer la transaction de manière atomique
-    // Cette fonction RPC en SQL doit : 
-    // - Vérifier le solde de l'utilisateur
-    // - Déduire le montant si le solde est suffisant
-    // - Enregistrer une ligne dans une table 'transactions' au statut 'PROCESSING'
-    // Tout cela en une seule transaction SQL pour éviter les Race Conditions !
-    
     const { data: transaction, error: dbError } = await supabase.rpc('process_wallet_withdrawal', {
       p_user_id: userId,
       p_amount: amount
@@ -59,7 +53,6 @@ export default async function handler(req, res) {
       await supabase.from('transactions').update({ status: 'SUCCESS' }).eq('id', transaction.id);
     } catch (smsError) {
       console.error("Le SMS n'a pas pu être envoyé mais le débit a eu lieu:", smsError);
-      // Optionnel : Vous pouvez logguer cela dans une table d'alertes pour votre support client
     }
 
     // 6. Réponse positive au client
@@ -76,4 +69,4 @@ export default async function handler(req, res) {
     console.error('Erreur interne lors du retrait:', error);
     return res.status(500).json({ error: 'Une erreur interne est survenue.' });
   }
-    }
+      }
