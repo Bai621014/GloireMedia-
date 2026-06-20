@@ -69,4 +69,4 @@ export default async function handler(req, res) {
     console.error('Erreur interne lors du retrait:', error);
     return res.status(500).json({ error: 'Une erreur interne est survenue.' });
   }
-      }
+}
