@@ -1,53 +1,79 @@
-import { calculateLocalBalance } from '../../../services/walletService';
+Import { calculateLocalBalance } from '../../../services/walletService';
 import { sendSmsNotification } from '../../../services/infobip';
+import { createPagesServerClient } from '@supabase/auth-helpers-nextjs'; // Exemple pour Next.js
 
 export default async function handler(req, res) {
-  // 1. Restriction stricte de la méthode HTTP
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Méthode non autorisée. Utilisez POST.' });
   }
 
-  const { userId, phoneNumber, coinsToWithdraw, userCurrency } = req.body;
+  // 1. Initialiser Supabase et vérifier l'identité de l'utilisateur (Sécurité Critique)
+  const supabase = createPagesServerClient({ req, res });
+  const { data: { session } } = await supabase.auth.getSession();
 
-  // 2. Sécurité : Vérification que les données essentielles sont bien présentes et valides
-  if (!userId || !phoneNumber || !coinsToWithdraw) {
-    return res.status(400).json({ error: 'Données manquantes (userId, phoneNumber ou montant requis).' });
+  if (!session) {
+    return res.status(401).json({ error: 'Utilisateur non authentifié.' });
   }
 
-  if (isNaN(coinsToWithdraw) || coinsToWithdraw <= 0) {
-    return res.status(400).json({ error: 'Le montant de GloireCoins à retirer doit être supérieur à 0.' });
+  const userId = session.user.id; // L'ID vient du token sécurisé, pas du body !
+  const { phoneNumber, coinsToWithdraw, userCurrency } = req.body;
+
+  // 2. Validation des entrées
+  if (!phoneNumber || !coinsToWithdraw) {
+    return res.status(400).json({ error: 'Données manquantes (phoneNumber ou montant requis).' });
+  }
+
+  const amount = parseFloat(coinsToWithdraw);
+  if (isNaN(amount) || amount <= 0) {
+    return res.status(400).json({ error: 'Le montant doit être un nombre supérieur à 0.' });
   }
 
   try {
-    // Simulation du solde actuel de l'utilisateur (À lier avec Supabase ou votre BDD par la suite)
-    const currentCoins = 1000; 
+    // 3. Appel d'une fonction stockée Supabase (RPC) pour gérer la transaction de manière atomique
+    // Cette fonction RPC en SQL doit : 
+    // - Vérifier le solde de l'utilisateur
+    // - Déduire le montant si le solde est suffisant
+    // - Enregistrer une ligne dans une table 'transactions' au statut 'PROCESSING'
+    // Tout cela en une seule transaction SQL pour éviter les Race Conditions !
+    
+    const { data: transaction, error: dbError } = await supabase.rpc('process_wallet_withdrawal', {
+      p_user_id: userId,
+      p_amount: amount
+    });
 
-    // 3. Contrôle du solde
-    if (coinsToWithdraw > currentCoins) {
-      return res.status(400).json({ error: 'Solde de GloireCoins insuffisant pour effectuer ce retrait.' });
+    if (dbError || !transaction.success) {
+      return res.status(400).json({ error: transaction?.message || 'Solde insuffisant ou erreur de transaction.' });
     }
 
-    // 4. Calcul automatique de la conversion (Sécurité : repli sur XAF par défaut)
+    // 4. Calcul automatique de la conversion
     const targetCurrency = userCurrency || 'XAF';
-    const conversion = calculateLocalBalance(coinsToWithdraw, targetCurrency);
+    const conversion = calculateLocalBalance(amount, targetCurrency);
 
-    // [Ici viendra votre logique Supabase pour déduire les pièces du solde utilisateur]
-    // exemple: await supabase.rpc('deduct_balance', { user_id: userId, amount: coinsToWithdraw })
-
-    // 5. Formulation et Envoi du SMS de succès via Infobip
-    const smsMessage = `GloireMedia : Votre retrait de ${coinsToWithdraw} GloireCoins a été validé. Un montant de ${conversion.formattedString} a été transféré sur votre compte Mobile Money. Merci d'inspirer la communauté !`;
+    // 5. Formulation et Envoi du SMS de succès
+    const smsMessage = `GloireMedia : Votre retrait de ${amount} GloireCoins a été validé. Un montant de ${conversion.formattedString} a été transféré sur votre compte Mobile Money. Merci d'inspirer la communauté !`;
     
-    await sendSmsNotification(phoneNumber, smsMessage);
+    try {
+      await sendSmsNotification(phoneNumber, smsMessage);
+      
+      // Mettre à jour le statut de la transaction en 'SUCCESS'
+      await supabase.from('transactions').update({ status: 'SUCCESS' }).eq('id', transaction.id);
+    } catch (smsError) {
+      console.error("Le SMS n'a pas pu être envoyé mais le débit a eu lieu:", smsError);
+      // Optionnel : Vous pouvez logguer cela dans une table d'alertes pour votre support client
+    }
 
     // 6. Réponse positive au client
     return res.status(200).json({
       success: true,
       message: 'Retrait validé et converti avec succès',
-      data: conversion
+      data: {
+        transactionId: transaction.id,
+        conversion: conversion
+      }
     });
 
   } catch (error) {
     console.error('Erreur interne lors du retrait:', error);
-    return res.status(500).json({ error: 'Une erreur interne est survenue lors de la conversion.' });
+    return res.status(500).json({ error: 'Une erreur interne est survenue.' });
   }
-  }
+    }
