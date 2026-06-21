@@ -85,6 +85,7 @@ function VideoCard({ video, user, isActive }) {
             </button>
           </div>
           <div className="flex-1 overflow-y-auto no-scrollbar">
+            {/* 🎯 CORRECTION : On passe correctement la variable user ici */}
             <CommentSection videoId={video.id} user={user} />
           </div>
         </div>
@@ -107,7 +108,7 @@ export default function VideoFeed({ videos, user }) {
     const options = {
       root: container,
       rootMargin: '0px',
-      threshold: 0.6 // La vidéo doit être visible à 60% pour s'activer
+      threshold: 0.6
     }
 
     const observer = new IntersectionObserver((entries) => {
@@ -122,7 +123,6 @@ export default function VideoFeed({ videos, user }) {
     const children = container.querySelectorAll('[data-video-id]')
     children.forEach((child) => observer.observe(child))
 
-    // Activer la première vidéo par défaut si rien n'est défini
     if (videos.length > 0 && !activeVideoId) {
       setActiveVideoId(videos[0].id.toString())
     }
