@@ -1,4 +1,5 @@
-import './globals.css'
+'use client'
+import './globals.css' // 🎯 CORRECTION : "import" est maintenant en minuscules
 
 export const metadata = {
   title: 'GloireMedia',
@@ -29,4 +30,4 @@ export default function RootLayout({ children }) {
       </body>
     </html>
   )
-    }
+}
