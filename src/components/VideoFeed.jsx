@@ -1,3 +1,4 @@
+'use client' // ✨ AJOUT DE LA DIRECTIVE CLIENT OBLIGATOIRE ICI
 import React, { useState, useRef, useEffect } from 'react';
 import VideoCard from './VideoCard';
 
