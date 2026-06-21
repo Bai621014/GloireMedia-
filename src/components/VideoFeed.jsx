@@ -1,5 +1,6 @@
-'use client' // ✨ AJOUT DE LA DIRECTIVE CLIENT OBLIGATOIRE ICI
+'use client'
 import React, { useState, useRef, useEffect } from 'react';
+// Correction absolue de l'importation pour Webpack et Next.js
 import VideoCard from './VideoCard';
 
 // Exemple de données de test (en attendant de lier Supabase ici)
@@ -76,4 +77,4 @@ export default function VideoFeed({ user }) {
       ))}
     </div>
   );
-}
+          }
