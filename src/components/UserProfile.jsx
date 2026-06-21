@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+'use client'
+import React, { useState } from 'react'; // 🎯 CORRECTION : "import" en minuscules
 
 // Traductions pour l'internationalisation de la communauté
 const translations = {
@@ -177,4 +178,4 @@ export default function UserProfile({ userLanguage = 'fr', initialBalance = 1250
       </div>
     </div>
   );
-}
+  }
