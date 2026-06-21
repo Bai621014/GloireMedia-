@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from 'axios'; // 🎯 CORRECTION : "import" en minuscules
 
 /**
  * Envoie une notification SMS via l'API Infobip
