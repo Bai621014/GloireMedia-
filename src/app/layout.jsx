@@ -1,5 +1,4 @@
-'use client'
-import './globals.css' // 🎯 CORRECTION : "import" est maintenant en minuscules
+import './globals.css' // 🎯 Propre et en minuscules
 
 export const metadata = {
   title: 'GloireMedia',
