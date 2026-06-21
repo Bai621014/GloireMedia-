@@ -2,12 +2,14 @@
 import { useState, useEffect } from 'react'
 import supabase from '../lib/supabase'
 
-// 🌟 Liste Sainte & Riche étendue : Émojis de Joie, Respect, Abondance et Éléments de Style
+// 🌟 Liste Sainte & Riche étendue : Joie, Abondance, Respect et Personnes Élégantes
 const POSITIVE_EMOJIS = [
   // Atmosphère spirituelle & Respect
   '🙏', '🙌', '✨', '🔥', '👑', '🕊️', '📖', '🌟',
   // Marques de respect, salutation & honneur
   '👏', '🤝', '🙇‍♂️', '🙇‍♀️', '👍', '✊', '👋', '✍️', '✏️',
+  // 🕺 Hommes et Femmes bien habillés / Gestes de succès
+  '🕺', '💃', '🕴️', '👨‍💼', '👩‍💼', '👑', '🏅', '🏆', '🎉',
   // Joie éclatante, éclats de rire & amour céleste (Cœurs multi-couleurs)
   '😂', '🤣', '😀', '🥰', '😁', '❤️', '🎉', '🥳', '☀️', '💙', '💜', '💚', '💛',
   // Signes d'abondance, bénédiction financière & réussite (Commissions V10)
@@ -95,22 +97,35 @@ export default function CommentSection({ videoId, user }) {
           💬 Flux d'Édification & de Grâce
         </h3>
         <div className="flex items-center space-x-3">
-          {/* 🚦 Zone des voyants animés */}
-          <div className="flex space-x-1.5 items-center bg-gray-900/60 px-2 py-1 rounded-full border border-gray-800">
-            {/* 🟢 Feu vert clignotant */}
+          
+          {/* 🚦 Zone des voyants animés complète */}
+          <div className="flex space-x-2 items-center bg-gray-900/60 px-2.5 py-1 rounded-full border border-gray-800">
+            {/* 🟢 Voyant Vert (Validation / Clarté) */}
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
             </span>
+
+            {/* 🔵 Voyant Bleu (Symbole du Royaume de Dieu) */}
+            <span className="relative flex h-2 w-2" title="Royaume de Dieu">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+            </span>
             
-            {/* 🔴 Feu rouge clignotant ajouté */}
+            {/* 🟡 Voyant Doré / Or (Abondance & Richesse V10) */}
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-yellow-500"></span>
+            </span>
+
+            {/* 🔴 Voyant Rouge (Modération / Filtre de pureté) */}
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
             </span>
           </div>
 
-          <span className="text-[10px] bg-yellow-500/10 border border-yellow-500/20 text-yellow-500 px-2 py-0.5 rounded-full font-medium">
+          <span className="text-[10px] bg-yellow-500/10 border border-yellow-500/20 text-yellow-500 px-2 py-0.5 rounded-full font-medium animate-pulse">
             Actif : +0.5 V10 💸
           </span>
         </div>
@@ -138,7 +153,7 @@ export default function CommentSection({ videoId, user }) {
       <div className="space-y-3.5 max-h-72 overflow-y-auto no-scrollbar pr-1">
         {comments.length === 0 ? (
           <div className="text-center py-8">
-            <span className="text-2xl block mb-2">🕊️</span>
+            <span className="text-2xl block mb-2 animate-bounce">🕊️</span>
             <p className="text-xs text-gray-500">Aucun message pour le moment. Soyez le premier à semer une parole de paix !</p>
           </div>
         ) : (
@@ -153,7 +168,9 @@ export default function CommentSection({ videoId, user }) {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between">
                   <p className="text-xs text-yellow-500/90 font-bold truncate">@{c.profiles?.username || 'Anonyme'}</p>
-                  <span className="text-[9px] text-gray-600">Béni ✨</span>
+                  <span className="text-[9px] text-gray-600 flex items-center gap-1">
+                    Béni <span className="inline-block animate-pulse text-yellow-400">✨</span>
+                  </span>
                 </div>
                 <p className="text-sm mt-1 text-gray-200 leading-relaxed break-words">{c.text}</p>
               </div>
@@ -163,4 +180,4 @@ export default function CommentSection({ videoId, user }) {
       </div>
     </div>
   )
-      }
+        }
