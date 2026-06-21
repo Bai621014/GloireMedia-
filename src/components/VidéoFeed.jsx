@@ -6,31 +6,31 @@ import CommentSection from './CommentSection'
 // ==========================================
 // 1. SOUS-COMPOSANT : CARTE VIDÉO INDIVIDUELLE
 // ==========================================
-function VideoCard({ video, user, isActive }) {
-  const videoRef = useRef(null)
+function VidéoCard({ vidéo, user, isActive }) {
+  const vidéoRef = useRef(null)
   const [isPlaying, setIsPlaying] = useState(false)
   const [showComments, setShowComments] = useState(false)
 
   useEffect(() => {
-    if (videoRef.current) {
+    if (vidéoRef.current) {
       if (isActive) {
-        videoRef.current.play().catch((err) => console.log("Lecture bloquée :", err))
+        vidéoRef.current.play().catch((err) => console.log("Lecture bloquée :", err))
         setIsPlaying(true)
       } else {
-        videoRef.current.pause()
-        videoRef.current.currentTime = 0
+        vidéoRef.current.pause()
+        vidéoRef.current.currentTime = 0
         setIsPlaying(false)
       }
     }
   }, [isActive])
 
-  const handleVideoClick = () => {
-    if (videoRef.current) {
+  const handleVidéoClick = () => {
+    if (vidéoRef.current) {
       if (isPlaying) {
-        videoRef.current.pause()
+        vidéoRef.current.pause()
         setIsPlaying(false)
       } else {
-        videoRef.current.play()
+        vidéoRef.current.play()
         setIsPlaying(true)
       }
     }
@@ -40,7 +40,8 @@ function VideoCard({ video, user, isActive }) {
     setIsPlaying(true)
     try {
       if (supabase) {
-        await supabase.rpc('increment_views', { target_video_id: video.id })
+        // Optionnel : l'identifiant dans ta table Supabase reste 'target_video_id' ou 'video_id' selon ta DB
+        await supabase.rpc('increment_views', { target_video_id: vidéo.id })
       }
     } catch (err) {
       console.error("Erreur de vue:", err.message)
@@ -50,21 +51,21 @@ function VideoCard({ video, user, isActive }) {
   return (
     <div className="relative w-full h-full max-w-md mx-auto bg-black flex flex-col justify-center items-center snap-start">
       <video
-        ref={videoRef}
-        onClick={handleVideoClick}
+        ref={vidéoRef}
+        onClick={handleVidéoClick}
         onPlay={handlePlayStarted}
         onPause={() => setIsPlaying(false)}
-        src={video.video_url}
+        src={vidéo.video_url || vidéo.vidéo_url}
         className="w-full h-[calc(100vh-130px)] object-cover rounded-xl"
         loop
         playsInline
       />
 
       <div className="absolute bottom-6 left-4 z-10 text-white right-16 pointer-events-none">
-        <p className="font-bold text-sm text-yellow-400">@{video.profiles?.username || 'Créateur'}</p>
-        <p className="text-xs mt-1 drop-shadow-md">{video.title}</p>
+        <p className="font-bold text-sm text-yellow-400">@{vidéo.profiles?.username || 'Créateur'}</p>
+        <p className="text-xs mt-1 drop-shadow-md">{vidéo.title}</p>
         <div className="flex items-center space-x-1 mt-2 text-[10px] text-gray-300 bg-black/40 px-2 py-1 rounded-full w-max">
-          <span>👁️</span> <span>{video.views || 0} vues</span>
+          <span>👁️</span> <span>{vidéo.views || 0} vues</span>
         </div>
       </div>
 
@@ -85,8 +86,8 @@ function VideoCard({ video, user, isActive }) {
             </button>
           </div>
           <div className="flex-1 overflow-y-auto no-scrollbar">
-            {/* 🎯 CORRECTION ICI : On ajoute user={user} pour lier la session avec les 4 feux */}
-            <CommentSection videoId={video.id} user={user} />
+            {/* Liasion sécurisée vers les commentaires avec les 4 feux */}
+            <CommentSection videoId={vidéo.id} user={user} />
           </div>
         </div>
       )}
@@ -95,15 +96,36 @@ function VideoCard({ video, user, isActive }) {
 }
 
 // ==========================================
-// 2. COMPOSANT PRINCIPAL : LE FLUX (FEED)
+// 2. COMPOSANT PRINCIPAL : LE FLUX (FEED) AVEC ACCENT
 // ==========================================
-export default function VideoFeed({ videos, user }) {
-  const [activeVideoId, setActiveVideoId] = useState(null)
+export default function VidéoFeed({ user }) {
+  const [vidéos, setVidéos] = useState([])
+  const [activeVidéoId, setActiveVidéoId] = useState(null)
+  const [loading, setLoading] = useState(true)
   const containerRef = useRef(null)
+
+  // Chargement des vidéos directement dans le flux
+  useEffect(() => {
+    async function fetchVidéos() {
+      const { data, error } = await supabase
+        .from('videos')
+        .select('*, profiles(username, avatar_url)')
+        .order('created_at', { ascending: false })
+      
+      if (!error && data) {
+        setVidéos(data)
+        if (data.length > 0) {
+          setActiveVidéoId(data[0].id.toString())
+        }
+      }
+      setLoading(false)
+    }
+    fetchVidéos()
+  }, [])
 
   useEffect(() => {
     const container = containerRef.current
-    if (!container) return
+    if (!container || vidéos.length === 0) return
 
     const options = {
       root: container,
@@ -114,8 +136,8 @@ export default function VideoFeed({ videos, user }) {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          const videoId = entry.target.getAttribute('data-video-id')
-          setActiveVideoId(videoId)
+          const vidéoId = entry.target.getAttribute('data-video-id')
+          setActiveVidéoId(vidéoId)
         }
       })
     }, options)
@@ -123,33 +145,45 @@ export default function VideoFeed({ videos, user }) {
     const children = container.querySelectorAll('[data-video-id]')
     children.forEach((child) => observer.observe(child))
 
-    if (videos.length > 0 && !activeVideoId) {
-      setActiveVideoId(videos[0].id.toString())
-    }
-
     return () => {
       children.forEach((child) => observer.unobserve(child))
     }
-  }, [videos, activeVideoId])
+  }, [vidéos])
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-[70vh] text-sm text-gray-500">
+        Chargement des flux...
+      </div>
+    )
+  }
+
+  if (vidéos.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-[70vh] text-sm text-gray-500 px-6 text-center">
+        Aucune bénédiction vidéo disponible pour le moment.
+      </div>
+    )
+  }
 
   return (
     <div 
       ref={containerRef}
       className="snap-y snap-mandatory h-[calc(100vh-130px)] overflow-y-scroll no-scrollbar w-full"
     >
-      {videos.map((video) => (
+      {vidéos.map((vidéo) => (
         <div 
-          key={video.id} 
-          data-video-id={video.id}
+          key={vidéo.id} 
+          data-video-id={vidéo.id}
           className="h-full w-full flex items-center justify-center border-b border-gray-950 snap-start"
         >
-          <VideoCard 
-            video={video} 
+          <VidéoCard 
+            vidéo={vidéo} 
             user={user} 
-            isActive={activeVideoId === video.id.toString()} 
+            isActive={activeVidéoId === vidéo.id.toString()} 
           />
         </div>
       ))}
     </div>
   )
-            }
+        }
