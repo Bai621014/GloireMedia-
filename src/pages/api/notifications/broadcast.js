@@ -1,4 +1,4 @@
-import { SPIRITUAL_NOTIFICATIONS } from '../../../services/notificationMessages';
+import { SPIRITUAL_NOTIFICATIONS } from '../../../services/notificationMessages'; // 🎯 CORRECTION : "import" en minuscules
 import { sendSmsNotification } from '../../../services/infobip';
 
 export default async function handler(req, res) {
