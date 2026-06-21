@@ -1,9 +1,9 @@
 'use client'
 import { useEffect, useState } from 'react'
-// Correction du chemin vers lib/supabase (on recule d'un niveau pour sortir de app/ et entrer dans lib/)
-import supabase from '../lib/supabase' 
-// 🎯 CORRECTION ACCENT : Importation configurée sur VidéoFeed avec son accent exact
-import VidéoFeed from '../components/VidéoFeed'
+// 🎯 CORRECTION CHEMIN : Sécurisation absolue de l'import Supabase
+import supabase from '@/lib/supabase' 
+// 🎯 CORRECTION ACCENT : Ciblage vers le fichier physique propre (VideoFeed sans accent)
+import VideoFeed from '@/components/VideoFeed'
 import Link from 'next/link'
 
 export default function Home() {
@@ -12,10 +12,14 @@ export default function Home() {
 
   useEffect(() => {
     // 1. Vérification de la session utilisateur active
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user || null)
+    if (supabase) {
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        setUser(session?.user || null)
+        setLoading(false)
+      })
+    } else {
       setLoading(false)
-    })
+    }
   }, [])
 
   return (
@@ -33,14 +37,14 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Zone de défilement vertical complet gérée dynamiquement par VidéoFeed */}
+      {/* Zone de défilement vertical complet gérée dynamiquement par VideoFeed */}
       {loading ? (
         <div className="flex items-center justify-center h-[70vh] text-sm text-gray-500">
           Chargement du flux positif...
         </div>
       ) : (
-        /* 🎯 CORRECTION ACCENT : Utilisation du composant avec l'accent */
-        <VidéoFeed user={user} />
+        /* 🎯 CORRECTION ACCENT : Utilisation du composant nettoyé */
+        <VideoFeed user={user} />
       )}
 
       {/* Barre de navigation basse pour le public */}
