@@ -2,8 +2,8 @@
 import { useEffect, useState } from 'react'
 // Correction du chemin vers lib/supabase (on recule d'un niveau pour sortir de app/ et entrer dans lib/)
 import supabase from '../lib/supabase' 
-// CORRECTION : On importe VideoFeed qui est le gestionnaire de flux principal, et non VideoCard directement
-import VideoFeed from '../components/VideoFeed'
+// 🎯 CORRECTION ACCENT : Importation configurée sur VidéoFeed avec son accent exact
+import VidéoFeed from '../components/VidéoFeed'
 import Link from 'next/link'
 
 export default function Home() {
@@ -33,13 +33,14 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Zone de défilement vertical complet gérée dynamiquement par VideoFeed */}
+      {/* Zone de défilement vertical complet gérée dynamiquement par VidéoFeed */}
       {loading ? (
         <div className="flex items-center justify-center h-[70vh] text-sm text-gray-500">
           Chargement du flux positif...
         </div>
       ) : (
-        <VideoFeed user={user} />
+        /* 🎯 CORRECTION ACCENT : Utilisation du composant avec l'accent */
+        <VidéoFeed user={user} />
       )}
 
       {/* Barre de navigation basse pour le public */}
@@ -51,4 +52,4 @@ export default function Home() {
       </nav>
     </div>
   )
-    }
+}
