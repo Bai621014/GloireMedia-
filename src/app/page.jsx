@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
-// 🎯 CORRECTION : Chemin relatif réel sans alias @
+// 🎯 CHEMINS DIRECTS : On recule de "app" vers "src" avec "../" puis on cible les bons dossiers
 import supabase from '../lib/supabase' 
 import VideoFeed from '../components/VideoFeed'
 import Link from 'next/link'
