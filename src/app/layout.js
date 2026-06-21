@@ -2,7 +2,7 @@ import './globals.css'
 
 export const metadata = {
   title: 'GloireMedia',
-  description: 'Espace d\'édification, de partage positif et de streaming',
+  description: "Espace d'édification, de partage positif et de streaming",
   manifest: '/manifest.json',
 }
 
