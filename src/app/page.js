@@ -1,6 +1,8 @@
 'use client'
 import { useEffect, useState } from 'react'
-import supabase from '../../lib/supabase' // Chemin corrigé (2 niveaux) et import par défaut
+// Correction du chemin vers lib/supabase (on recule d'un niveau pour sortir de app/ et entrer dans lib/)
+import supabase from '../lib/supabase' 
+// Correction du chemin vers components (on recule d'un niveau pour entrer dans components/)
 import VideoCard from '../components/VideoCard'
 import Link from 'next/link'
 
@@ -74,4 +76,4 @@ export default function Home() {
       </nav>
     </div>
   )
-    }
+}
