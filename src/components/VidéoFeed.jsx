@@ -40,7 +40,6 @@ function VidéoCard({ vidéo, user, isActive }) {
     setIsPlaying(true)
     try {
       if (supabase) {
-        // Optionnel : l'identifiant dans ta table Supabase reste 'target_video_id' ou 'video_id' selon ta DB
         await supabase.rpc('increment_views', { target_video_id: vidéo.id })
       }
     } catch (err) {
@@ -50,6 +49,7 @@ function VidéoCard({ vidéo, user, isActive }) {
 
   return (
     <div className="relative w-full h-full max-w-md mx-auto bg-black flex flex-col justify-center items-center snap-start">
+      {/* 🎯 FIX RENDER : La balise HTML doit rester strictement <video> sans accent */}
       <video
         ref={vidéoRef}
         onClick={handleVidéoClick}
@@ -86,7 +86,6 @@ function VidéoCard({ vidéo, user, isActive }) {
             </button>
           </div>
           <div className="flex-1 overflow-y-auto no-scrollbar">
-            {/* Liasion sécurisée vers les commentaires avec les 4 feux */}
             <CommentSection videoId={vidéo.id} user={user} />
           </div>
         </div>
@@ -96,7 +95,7 @@ function VidéoCard({ vidéo, user, isActive }) {
 }
 
 // ==========================================
-// 2. COMPOSANT PRINCIPAL : LE FLUX (FEED) AVEC ACCENT
+// 2. COMPOSANT PRINCIPAL : LE FLUX (FEED)
 // ==========================================
 export default function VidéoFeed({ user }) {
   const [vidéos, setVidéos] = useState([])
@@ -104,7 +103,6 @@ export default function VidéoFeed({ user }) {
   const [loading, setLoading] = useState(true)
   const containerRef = useRef(null)
 
-  // Chargement des vidéos directement dans le flux
   useEffect(() => {
     async function fetchVidéos() {
       const { data, error } = await supabase
@@ -136,6 +134,7 @@ export default function VidéoFeed({ user }) {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
+          {/* 🎯 FIX RENDER : Le sélecteur d'attribut HTML doit rester sans accent */}
           const vidéoId = entry.target.getAttribute('data-video-id')
           setActiveVidéoId(vidéoId)
         }
@@ -186,4 +185,4 @@ export default function VidéoFeed({ user }) {
       ))}
     </div>
   )
-        }
+      }
