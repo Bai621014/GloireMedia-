@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import VideoFeed from './VideoFeed';
+'use client'
+import React, { useState } from 'react'; // 🎯 CORRECTION : "import" en minuscules
+import VideoFeed from './VideoFeed';      // 🎯 SANS ACCENT : Parfaitement aligné avec ton choix
 import UserProfile from './UserProfile';
 import OTPVerification from './OTPVerification';
 
@@ -29,7 +30,6 @@ export default function MainNavigation() {
           </div>
         );
       case 'profile':
-        // Si l'utilisateur n'est pas encore vérifié par SMS, on l'oriente d'abord vers la sécurité
         if (!isVerified) {
           return (
             <div className="h-screen w-full bg-gray-950 flex items-center justify-center p-4">
@@ -82,7 +82,7 @@ export default function MainNavigation() {
           <span className="text-xl text-black">📸</span>
         </button>
 
-        {/* Onglet Profil (Sécurisé et discret) */}
+        {/* Onglet Profil */}
         <button 
           onClick={() => setCurrentTab('profile')} 
           className={`flex flex-col items-center transition ${currentTab === 'profile' ? 'text-amber-500' : 'text-gray-400'}`}
@@ -94,4 +94,4 @@ export default function MainNavigation() {
       </div>
     </div>
   );
-        }
+          }
