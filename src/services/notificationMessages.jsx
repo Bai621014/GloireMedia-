@@ -1,4 +1,4 @@
-export const SPIRITUAL_NOTIFICATIONS = { // 🎯 CORRECTION : "export" en minuscules
+export const SPIRITUAL_NOTIFICATIONS = { 
   HEALING: {
     fr: "C'est l'heure de la guérison divine avec Pasteur Chris, lève-toi et sois guéri au nom de Jésus !",
     en: "It is the hour of divine healing with Pastor Chris, rise up and be healed in the name of Jesus!",
