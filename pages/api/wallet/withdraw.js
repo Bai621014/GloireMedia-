@@ -1,4 +1,4 @@
-import { calculateLocalBalance } from '../../../services/walletService';
+import { calculateLocalBalance } from '../../../utils/currency';
 import { sendSmsNotification } from '../../../services/infobip';
 import { createPagesServerClient } from '@supabase/auth-helpers-nextjs';
 
@@ -7,7 +7,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Méthode non autorisée. Utilisez POST.' });
   }
 
-  // 1. Initialiser Supabase et vérifier l'identité de l'utilisateur (Sécurité Critique)
+  // 1. Initialiser Supabase et vérifier l'identité de l'utilisateur
   const supabase = createPagesServerClient({ req, res });
   const { data: { session } } = await supabase.auth.getSession();
 
@@ -15,7 +15,7 @@ export default async function handler(req, res) {
     return res.status(401).json({ error: 'Utilisateur non authentifié.' });
   }
 
-  const userId = session.user.id; // L'ID vient du token sécurisé, pas du body !
+  const userId = session.user.id;
   const { phoneNumber, coinsToWithdraw, userCurrency } = req.body;
 
   // 2. Validation des entrées
@@ -29,17 +29,17 @@ export default async function handler(req, res) {
   }
 
   try {
-    // 3. Appel d'une fonction stockée Supabase (RPC) pour gérer la transaction de manière atomique
+    // 3. Appel de la fonction stockée Supabase (RPC)
     const { data: transaction, error: dbError } = await supabase.rpc('process_wallet_withdrawal', {
       p_user_id: userId,
       p_amount: amount
     });
 
-    if (dbError || !transaction.success) {
+    if (dbError || !transaction?.success) {
       return res.status(400).json({ error: transaction?.message || 'Solde insuffisant ou erreur de transaction.' });
     }
 
-    // 4. Calcul automatique de la conversion
+    // 4. Calcul automatique de la conversion via l'utilitaire
     const targetCurrency = userCurrency || 'XAF';
     const conversion = calculateLocalBalance(amount, targetCurrency);
 
@@ -49,13 +49,12 @@ export default async function handler(req, res) {
     try {
       await sendSmsNotification(phoneNumber, smsMessage);
       
-      // Mettre à jour le statut de la transaction en 'SUCCESS'
+      // Mettre à jour le statut en 'SUCCESS' en base
       await supabase.from('transactions').update({ status: 'SUCCESS' }).eq('id', transaction.id);
     } catch (smsError) {
       console.error("Le SMS n'a pas pu être envoyé mais le débit a eu lieu:", smsError);
     }
 
-    // 6. Réponse positive au client
     return res.status(200).json({
       success: true,
       message: 'Retrait validé et converti avec succès',
