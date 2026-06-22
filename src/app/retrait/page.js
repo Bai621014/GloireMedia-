@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
-import supabase from '../../../lib/supabase' // Correction du chemin d'accès à 3 niveaux
+// 🎯 HARMONISATION : Import depuis config/supabase
+import supabase from '../../config/supabase' 
 
 export default function RetraitPage() {
   const [balance, setBalance] = useState(0)
@@ -12,6 +13,7 @@ export default function RetraitPage() {
 
   useEffect(() => {
     async function loadUserBalance() {
+      if (!supabase) return;
       const { data: { session } } = await supabase.auth.getSession()
       if (session?.user) {
         const { data } = await supabase
@@ -29,23 +31,15 @@ export default function RetraitPage() {
     e.preventDefault()
     setMessage('')
     
-    if (!amount || parseFloat(amount) <= 0) {
-      return setMessage('⚠️ Veuillez entrer un montant valide.')
-    }
-    if (parseFloat(amount) > balance) {
-      return setMessage('⚠️ Solde insuffisant pour effectuer cette conversion.')
-    }
-    if (!phoneNumber) {
-      return setMessage('⚠️ Veuillez entrer le numéro de téléphone bénéficiaire.')
-    }
+    if (!amount || parseFloat(amount) <= 0) return setMessage('⚠️ Veuillez entrer un montant valide.')
+    if (parseFloat(amount) > balance) return setMessage('⚠️ Solde insuffisant.')
+    if (!phoneNumber) return setMessage('⚠️ Veuillez entrer le numéro de téléphone.')
 
     setLoading(true)
-    
     try {
       const { data: { session } } = await supabase.auth.getSession()
       if (!session?.user) throw new Error("Utilisateur non connecté.")
       
-      // Enregistrement de la demande de retrait
       const { error } = await supabase.from('withdrawals').insert({
         user_id: session.user.id,
         amount: parseFloat(amount),
@@ -56,9 +50,8 @@ export default function RetraitPage() {
 
       if (error) throw error
 
-      // Optimisation de l'affichage local du solde
       setBalance(prev => prev - parseFloat(amount))
-      setMessage('✅ Demande de transfert envoyée avec succès ! Traitement en cours via Mobile Money.')
+      setMessage('✅ Demande envoyée avec succès !')
       setAmount('')
       setPhoneNumber('')
     } catch (err) {
@@ -71,16 +64,13 @@ export default function RetraitPage() {
   return (
     <div className="p-4 bg-black text-white min-h-screen pb-24 max-w-md mx-auto">
       <h1 className="text-2xl font-bold text-yellow-400 mb-1">💳 Retrait & Conversions</h1>
-      <p className="text-xs text-gray-400 mb-6">Convertissez vos récompenses d'activité positive en crédit ou cash mobile.</p>
+      <p className="text-xs text-gray-400 mb-6">Convertissez vos récompenses en crédit ou cash mobile.</p>
 
-      {/* Tableau de bord du solde */}
       <div className="bg-gray-950 p-6 rounded-2xl border border-gray-900 text-center mb-6">
         <span className="text-xs text-gray-400 uppercase tracking-widest block mb-1">Votre Solde Actuel</span>
         <span className="text-3xl font-black text-green-400">{balance.toFixed(2)} V10</span>
-        <p className="text-[10px] text-gray-500 mt-2">Équivalent en valeur locale disponible pour le transfert</p>
       </div>
 
-      {/* Formulaire de demande de paiement */}
       <form onSubmit={handleWithdraw} className="space-y-4 bg-gray-950 p-4 rounded-xl border border-gray-900">
         <div>
           <label className="block text-xs font-bold text-gray-400 mb-2">1. Choisir l'opérateur local</label>
@@ -92,7 +82,6 @@ export default function RetraitPage() {
             <option value="MTN">MTN MoMo</option>
             <option value="Orange">Orange Money</option>
             <option value="Moov">Moov Money / Airtel</option>
-            <option value="Credit">Crédit de Communication</option>
           </select>
         </div>
 
@@ -118,16 +107,12 @@ export default function RetraitPage() {
           />
         </div>
 
-        {message && (
-          <p className="text-xs p-3 bg-gray-900 rounded-lg text-center font-medium leading-relaxed">
-            {message}
-          </p>
-        )}
+        {message && <p className="text-xs p-3 bg-gray-900 rounded-lg text-center font-medium">{message}</p>}
 
         <button 
           type="submit" 
           disabled={loading}
-          className="w-full bg-yellow-500 hover:bg-yellow-600 disabled:bg-gray-800 text-black font-bold py-3 rounded-xl text-xs transition-transform active:scale-95"
+          className="w-full bg-yellow-500 hover:bg-yellow-600 disabled:bg-gray-800 text-black font-bold py-3 rounded-xl text-xs"
         >
           {loading ? 'Validation en cours...' : 'Confirmer la conversion'}
         </button>
