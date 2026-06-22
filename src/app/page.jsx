@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
-// 🎯 CHEMINS DIRECTS : On recule de "app" vers "src" avec "../" puis on cible les bons dossiers
-import supabase from '../lib/supabase' 
+// 🎯 HARMONISATION : Import depuis le nouveau dossier de configuration
+import supabase from '../config/supabase' 
 import VideoFeed from '../components/VideoFeed'
 import Link from 'next/link'
 
