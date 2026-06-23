@@ -1,0 +1,34 @@
+/* Réinitialisation pour éviter les marges bizarres */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #0f172a; /* Bleu très foncé, très élégant */
+    color: white;
+    line-height: 1.6;
+}
+
+header {
+    text-align: center;
+    padding: 2rem;
+    background: linear-gradient(to right, #eab308, #fbbf24); /* Dégradé jaune/or */
+    color: #0f172a;
+}
+
+main {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    text-align: center;
+}
+
+/* Style du logo */
+header img {
+    width: 100px;
+    border-radius: 50%;
+    margin-bottom: 1rem;
+}
