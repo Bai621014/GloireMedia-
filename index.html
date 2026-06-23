@@ -3,50 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GloireMedia | Healing Streams</title>
+    <title>GloireMedia | Healing Streams & Web3 Hub</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header>
-        <h1>GloireMedia</h1>
-    </header>
+    <!-- Barre de navigation fixée -->
+    <nav class="navbar">
+        <div class="logo">GloireMedia</div>
+        <div class="nav-links"><span>Healing Streams</span></div>
+    </nav>
 
     <main>
-        <!-- Flux Healing Streams du Pasteur Chris -->
+        <!-- Section Live (Immersif) -->
         <section id="live-healing-streams">
             <div class="live-container">
                 <div class="live-header">
                     <span class="live-indicator">● EN DIRECT</span>
-                    <h2>Healing Streams - Pasteur Chris</h2>
+                    <h2>Healing Streams avec le Pasteur Chris</h2>
                 </div>
-                <!-- Lecteur plein écran -->
                 <div class="video-wrapper">
-                    <iframe 
-                        src="https://healingstreams.tv/zone/Wez3" 
-                        allowfullscreen 
-                        title="Healing Streams Live">
-                    </iframe>
+                    <iframe src="https://healingstreams.tv/zone/Wez3" allowfullscreen></iframe>
                 </div>
-                <p class="notification-text">Recevez une notification dès que le Pasteur Chris est en direct mondial.</p>
+                <div class="broadcast-banner">
+                    <p>Diffusion mondiale en haute définition</p>
+                </div>
             </div>
         </section>
 
-        <!-- Section VideoFeed : Contenu GloireHub -->
-        <section id="video-feed" class="video-container">
-            <h2>Contenu GloireHub</h2>
+        <!-- Section VideoFeed (Grille dynamique) -->
+        <section id="video-feed">
+            <h2 class="section-title">Contenu Inspirant</h2>
             <div class="video-grid">
-                <!-- Exemple de VideoCard -->
                 <div class="video-card">
-                    <div class="video-placeholder">Vidéo</div>
-                    <h3>Titre de la vidéo</h3>
+                    <div class="video-placeholder">🚀</div>
+                    <h3>Titre Vidéo Pro</h3>
+                </div>
+                <div class="video-card">
+                    <div class="video-placeholder">✨</div>
+                    <h3>Titre Vidéo Pro</h3>
                 </div>
             </div>
         </section>
 
-        <!-- Dashboard Utilisateur (Caché GloireCoin) -->
+        <!-- Dashboard (Interface financière épurée) -->
         <section id="dashboard" class="profile-container">
             <div class="wallet-card">
-                <h3>Mon Solde</h3>
+                <h3>Gestion de compte</h3>
                 <div class="balance-display">
                     <span id="balance">0.00</span> <span class="currency">Unités</span>
                 </div>
