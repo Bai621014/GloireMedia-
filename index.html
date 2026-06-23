@@ -3,37 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GloireMedia | Web3 & Healing Streams</title>
+    <title>GloireMedia | Healing Streams</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
-        <img src="votre-logo.png" alt="Logo GloireMedia">
         <h1>GloireMedia</h1>
-        <div class="gloirecoin-banner">
-            <p>🚀 <strong>GloireCoin</strong> : Économie Digitale Web3</p>
-        </div>
     </header>
 
     <main>
-        <!-- Section Live Pasteur Chris -->
-        <section id="live-stream">
-            <h2>Live : Healing Streams</h2>
-            <div class="video-card live">
-                <iframe src="https://healingstreams.tv/zone/Wez3" frameborder="0" allowfullscreen></iframe>
-                <h3>Programmes du Pasteur Chris</h3>
+        <!-- Flux Healing Streams du Pasteur Chris -->
+        <section id="live-healing-streams">
+            <div class="live-container">
+                <div class="live-header">
+                    <span class="live-indicator">● EN DIRECT</span>
+                    <h2>Healing Streams - Pasteur Chris</h2>
+                </div>
+                <!-- Lecteur plein écran -->
+                <div class="video-wrapper">
+                    <iframe 
+                        src="https://healingstreams.tv/zone/Wez3" 
+                        allowfullscreen 
+                        title="Healing Streams Live">
+                    </iframe>
+                </div>
+                <p class="notification-text">Recevez une notification dès que le Pasteur Chris est en direct mondial.</p>
             </div>
         </section>
 
-        <!-- Section VideoFeed -->
-        <section id="video-feed">
-            <h2>Contenu GloireHub</h2>
-            <div class="video-grid">
-                <div class="video-card">
-                    <div class="video-placeholder">Vidéo Web3</div>
-                    <h3>Innovation & Progrès</h3>
-                    <button>Gagner des GloireCoin</button>
+        <!-- Dashboard Utilisateur (Caché GloireCoin) -->
+        <section id="dashboard" class="profile-container">
+            <div class="wallet-card">
+                <h3>Mon Solde</h3>
+                <div class="balance-display">
+                    <span id="balance">0.00</span> <span class="currency">Unités</span>
                 </div>
+                <button class="withdraw-btn">Transférer vers GloirePay</button>
             </div>
         </section>
     </main>
