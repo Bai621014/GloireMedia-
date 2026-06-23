@@ -1,6 +1,7 @@
 'use client'
 import React, { useState, useMemo } from 'react';
-import { supabase } from './supabaseClient'; // Liaison établie
+import { supabase } from './supabaseClient';
+import { sendSmsNotification } from './smsService'; // Assurez-vous que le nom du fichier est correct
 import { translations } from './translations';
 import { exchangeRates } from './exchangeRates';
 import TransactionHistory from './TransactionHistory';
@@ -14,12 +15,13 @@ export default function UserProfile({ userLanguage = 'fr', initialBalance = 1250
   ]);
 
   const t = useMemo(() => translations[lang] || translations.fr, [lang]);
+  
   const convertedBalance = useMemo(() => {
     const rate = exchangeRates[currency] || 1;
     return (initialBalance * rate).toLocaleString(undefined, { minimumFractionDigits: 2 });
   }, [initialBalance, currency]);
 
-  // Logique de retrait Pro Web3 avec Supabase
+  // Logique de retrait Pro Web3 avec Supabase et Notification SMS
   const handleWithdrawRequest = async () => {
     if (initialBalance < 5000) {
       alert(`⚠️ ${t.minPayout} : 5000 GC`);
@@ -28,6 +30,7 @@ export default function UserProfile({ userLanguage = 'fr', initialBalance = 1250
     
     setLoading(true);
     try {
+      // 1. Enregistrement sécurisé dans Supabase
       const { data, error } = await supabase
         .from('transactions')
         .insert([{ 
@@ -35,15 +38,18 @@ export default function UserProfile({ userLanguage = 'fr', initialBalance = 1250
           status: 'pending', 
           type: 'withdraw',
           description: 'Retrait utilisateur',
-          date: new Date().toLocaleDateString()
+          date: new Date().toISOString()
         }]);
 
       if (error) throw error;
+
+      // 2. Notification SMS Immédiate
+      await sendSmsNotification('+23562101468', 'Votre demande de retrait de 5000 GC a été enregistrée avec succès sur GloireMedia.');
       
-      alert("✅ Demande de retrait enregistrée et sécurisée sur la blockchain.");
+      alert("✅ Demande enregistrée et notification envoyée avec succès !");
     } catch (error) {
-      console.error("Erreur:", error);
-      alert("⚠️ Erreur : Service indisponible.");
+      console.error("Erreur transaction:", error);
+      alert("⚠️ Erreur : Service indisponible. Vérifiez votre connexion.");
     } finally {
       setLoading(false);
     }
@@ -51,6 +57,7 @@ export default function UserProfile({ userLanguage = 'fr', initialBalance = 1250
 
   return (
     <div className="min-h-screen bg-gray-950 text-gray-100 p-4 font-sans selection:bg-amber-500 selection:text-black">
+      {/* Header Profil */}
       <div className="flex flex-col items-center my-6 space-y-3">
         <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-amber-500 via-yellow-400 to-amber-600 p-1 shadow-2xl">
           <div className="w-full h-full rounded-full bg-gray-900 flex items-center justify-center text-3xl font-bold text-amber-500">N</div>
@@ -61,6 +68,7 @@ export default function UserProfile({ userLanguage = 'fr', initialBalance = 1250
         </div>
       </div>
 
+      {/* Wallet Card */}
       <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl p-6 border border-gray-800 shadow-2xl mb-6">
         <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">{t.balance}</p>
         <div className="flex items-baseline space-x-2 my-2">
@@ -78,7 +86,7 @@ export default function UserProfile({ userLanguage = 'fr', initialBalance = 1250
         <button 
           onClick={handleWithdrawRequest} 
           disabled={loading}
-          className="w-full mt-6 bg-amber-500 hover:bg-amber-400 text-black font-black py-3.5 rounded-xl transition-all active:scale-[0.98]"
+          className="w-full mt-6 bg-amber-500 hover:bg-amber-400 text-black font-black py-3.5 rounded-xl transition-all active:scale-[0.98] disabled:opacity-50"
         >
           {loading ? "Traitement en cours..." : t.withdraw}
         </button>
