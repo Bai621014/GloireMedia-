@@ -1,13 +1,10 @@
-/* Design Social & Pro */
-.navbar { position: sticky; top: 0; background: #0f172a; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; z-index: 1000; border-bottom: 1px solid #334155; }
-.upload-btn { background: var(--gold); border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+/* Style du bouton Caméra/Upload */
+.upload-btn { 
+    background: #eab308; color: #0f172a; padding: 12px 25px; 
+    border-radius: 50px; font-weight: bold; cursor: pointer;
+    border: none; display: flex; align-items: center; gap: 8px;
+}
 
-/* Grille de cartes dynamiques */
-.video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; padding: 2rem; }
-.card-actions { display: flex; gap: 10px; margin-top: 15px; }
-.card-actions button { flex: 1; padding: 8px; border-radius: 6px; border: 1px solid #475569; background: #0f172a; color: white; cursor: pointer; }
-
-/* Flux vidéo plein écran */
-.live-container { width: 100%; margin: 0; padding: 0; }
-.video-wrapper { position: relative; width: 100%; padding-bottom: 56.25%; height: 0; }
-.video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+/* Grille dynamique pour les nouveaux contenus */
+.video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; padding: 20px; }
+.video-card { background: #1e293b; padding: 15px; border-radius: 12px; }
