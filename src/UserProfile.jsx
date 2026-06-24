@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { supabase } from './lib/supabase';
 
-export default function UserProfile({ initialBalance }) {
-  const [balance, setBalance] = useState(initialBalance);
-  const [rate, setRate] = useState(100); // Taux par défaut 1GC = 100 FCFA
+export default function UserProfile({ initialBalance = 0 }) { // Ajout de la valeur par défaut = 0
+  const [balance] = useState(initialBalance);
+  const [rate] = useState(100); 
 
   const amountFcfa = (balance * rate).toLocaleString();
 
