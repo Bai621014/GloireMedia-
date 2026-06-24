@@ -1,0 +1,66 @@
+/* Nettoyage global pour l'immersion */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* Conteneur plein écran optimisé pour mobile */
+.feed-container { 
+    height: 100dvh; /* Utilise la hauteur dynamique (meilleur que 100vh sur mobile) */
+    overflow-y: scroll; 
+    scroll-snap-type: y mandatory;
+    background: #000;
+    -webkit-overflow-scrolling: touch; /* Fluidité iOS */
+}
+
+/* Cartes en plein écran */
+.video-card { 
+    height: 100dvh; 
+    scroll-snap-align: start; 
+    position: relative; 
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #000;
+}
+
+/* Bouton Upload optimisé */
+.upload-btn { 
+    background: #eab308; 
+    color: #0f172a; 
+    padding: 12px 25px; 
+    border-radius: 50px; 
+    font-weight: 900; 
+    cursor: pointer;
+    border: none; 
+    display: flex; 
+    align-items: center; 
+    gap: 8px;
+    box-shadow: 0 4px 15px rgba(234, 179, 8, 0.3);
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.upload-btn:active { transform: scale(0.95); }
+
+/* Overlay UI */
+.ui-overlay { 
+    position: absolute; 
+    bottom: 80px; /* Ajusté pour laisser place aux menus mobiles */
+    right: 15px; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 20px; 
+    z-index: 10; /* Assure que les boutons restent au-dessus de la vidéo */
+}
+
+.action-btn { 
+    background: rgba(0,0,0,0.5); 
+    border: 1px solid rgba(255,255,255,0.1);
+    color: white; 
+    width: 50px; 
+    height: 50px; 
+    border-radius: 50%; 
+    cursor: pointer;
+    backdrop-filter: blur(10px); /* Effet verre plus marqué */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
