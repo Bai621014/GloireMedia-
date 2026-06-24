@@ -1,43 +1,21 @@
-import { useState } from 'react';
+  const handleWithdraw = async () => {
+    const amountFCFA = balance * rate;
+    
+    // Enregistrement dans une nouvelle table appelée 'withdrawals'
+    const { data, error } = await supabase
+      .from('withdrawals')
+      .insert([
+        { 
+          user_id: 'votre_id_utilisateur', // Vous pourrez automatiser cela
+          amount: amountFCFA, 
+          phone: "62101468", 
+          status: 'pending' // En attente de traitement
+        }
+      ]);
 
-export default function UserProfile() {
-  const [balance] = useState(500);
-  const rate = 100;
-  const targetNumber = "62 10 14 68";
-
-  const handleWithdraw = () => {
-    alert(`Demande de retrait de ${(balance * rate).toLocaleString()} FCFA envoyée au ${targetNumber} via Airtel Money.`);
+    if (error) {
+      alert("Erreur lors de la demande : " + error.message);
+    } else {
+      alert("Demande de retrait de " + amountFCFA + " FCFA envoyée avec succès au 62101468 !");
+    }
   };
-
-  return (
-    <div style={{ backgroundColor: '#0f172a', color: 'white', padding: '40px 20px', minHeight: '100vh', textAlign: 'center', fontFamily: 'sans-serif' }}>
-      <h1 style={{ marginBottom: '30px' }}>GloireMedia Dashboard</h1>
-      
-      <div style={{ background: '#1e293b', padding: '20px', borderRadius: '20px', marginBottom: '20px' }}>
-        <p style={{ color: '#94a3b8' }}>Solde actuel :</p>
-        <h2 style={{ fontSize: '2.5em', color: '#4ade80' }}>{balance} GC</h2>
-      </div>
-
-      <div style={{ background: '#1e293b', padding: '20px', borderRadius: '20px', marginBottom: '30px' }}>
-        <p style={{ color: '#94a3b8' }}>Valeur en FCFA :</p>
-        <h2 style={{ fontSize: '2em', color: '#ffffff' }}>{(balance * rate).toLocaleString()} FCFA</h2>
-      </div>
-
-      <button 
-        onClick={handleWithdraw}
-        style={{ 
-          padding: '15px 30px', 
-          backgroundColor: '#e11d48', 
-          color: 'white', 
-          border: 'none', 
-          borderRadius: '10px', 
-          fontSize: '18px', 
-          fontWeight: 'bold',
-          cursor: 'pointer'
-        }}
-      >
-        Retirer au {targetNumber}
-      </button>
-    </div>
-  );
-}
