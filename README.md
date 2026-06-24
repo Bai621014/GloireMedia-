@@ -9,36 +9,38 @@ GloireMedia V10 est une plateforme mobile de partage de vidéos et de diffusions
 ## ✨ Fonctionnalités Clés
 
 * **📹 Flux de Contenu Positif :** Un espace de partage de vidéos soumis à une charte stricte de bienveillance et d'encouragement.
-* **🙏 Gloire-Direct (Live Streaming) :** Intégration du **SDK Agora Audio/Video** pour suivre les moments de prière, d'intercession et d'édification (ex: flux en direct de Pasteur Chris) même à bas débit.
-* **💳 Système de Commissions & Retrait Local :** Un portefeuille numérique intégré permettant de convertir vos jetons d'activité (`V10`) directement en Cash via **MTN MoMo**, **Orange Money** ou en **Crédit de communication**.
-* **🛍️ Espace Publicitaire & Marketplace :** Un marché communautaire alimenté par Supabase pour booster vos propres affaires ou acheter des offres exclusives en utilisant vos gains.
-* **⚡ Mode Hors-Ligne & Optimisation 3G :** Service Worker configuré avec la stratégie *Stale-While-Revalidate* pour économiser les données mobiles tout en garantissant des mises à jour transparentes.
+* **🙏 Gloire-Direct (Live Streaming) :** Intégration du **SDK Agora Audio/Video** pour suivre les moments de prière, d'intercession et d'édification, même à bas débit.
+* **💳 Système de Commissions & Retrait Local :** Portefeuille numérique intégré permettant de convertir les jetons d'activité (`V10`) en Cash via **MTN MoMo**, **Orange Money** ou en **Crédit de communication**.
+* **🛍️ Espace Publicitaire & Marketplace :** Marché communautaire alimenté par **Supabase** pour booster vos affaires ou acheter des offres exclusives.
+* **⚡ Optimisation Mobile First :** Architecture légère et performante, optimisée pour une navigation fluide sur réseaux 3G/4G.
 
 ---
 
 ## 🛠️ Stack Technique
 
-* **Framework Frontend :** Next.js 14+ (Pages/App Router Architecture)
+* **Framework Frontend :** React avec **Vite** (Architecture SPA ultra-performante)
 * **Styles :** Tailwind CSS (Design Sombre / Premium Black & Gold)
-* **Backend & Base de données :** Supabase (Authentification, profils, retraits sécurisés par transactions RPC, marketplace)
+* **Backend & Base de données :** Supabase (Authentification, profils, transactions sécurisées, marketplace)
 * **Live Streaming :** Agora Web SDK
 * **Stockage Médias :** Cloudinary
-* **PWA :** Service Workers natifs pour la gestion du cache et manifeste d'application mobile (`manifest.json`).
+* **Performance :** Service Workers natifs pour la gestion du cache et déploiement optimisé sur **Render**.
 
 ---
 
-## 📦 Structure du Projet (Extraits)
+## 📦 Structure du Projet (Extrait)
 
-* `public/manifest.json` : Configuration PWA avec gestion des couleurs thématiques premium (`#000000`, `#FFD700`).
-* `public/sw.js` : Stratégie *Stale-While-Revalidate* pour les assets de base, avec contournement automatique sécurisé pour les requêtes dynamiques (Supabase & Cloudinary).
-* `services/walletService.js` : Module de gestion et conversion des devises locales (XAF, XOF, CDF, USD) avec arrondis monétaires stricts.
-* `pages/api/wallet/withdraw.js` : API de retrait sécurisée, protégée contre les attaques de type Race Condition grâce aux transactions PostgreSQL.
+* `src/` : Cœur de l'application (Composants React, Logique Métier).
+* `src/UserProfile.jsx` : Gestion du profil et des retraits utilisateur.
+* `src/TransactionHistory.jsx` : Historique des transactions optimisé.
+* `src/supabaseClient.js` : Client Supabase configuré avec `import.meta.env`.
+* `src/exchangeRates.js` : Moteur de conversion monétaire local (XAF, XOF, USD).
+* `public/` : Assets statiques et configuration PWA.
 
 ---
 
-## 🚀 Installation & Développement Local
+## 🚀 Installation & Développement
 
 1. **Cloner le dépôt :**
 ```bash
-   git clone [https://github.com/GloireMedia-/GloireMedia-.git](https://github.com/GloireMedia-/GloireMedia-.git)
-   cd GloireMedia-
+git clone [https://github.com/GloireMedia-/GloireMedia-.git](https://github.com/GloireMedia-/GloireMedia-.git)
+cd GloireMedia-
