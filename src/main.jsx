@@ -1,17 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import UserProfile from './UserProfile';
-import './style.css';
 
-const rootElement = document.getElementById('root');
+const TestApp = () => (
+  <div style={{ color: 'white', padding: '50px', fontSize: '30px' }}>
+    TEST RÉUSSI : React fonctionne !
+  </div>
+);
 
-if (rootElement) {
-  ReactDOM.createRoot(rootElement).render(
-    <React.StrictMode>
-      {/* On laisse UserProfile aller chercher ses données seul dans Supabase */}
-      <UserProfile />
-    </React.StrictMode>
-  );
-} else {
-  console.error("Erreur critique : L'élément avec l'ID 'root' est introuvable dans le HTML.");
-}
+ReactDOM.createRoot(document.getElementById('root')).render(<TestApp />);
