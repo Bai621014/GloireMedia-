@@ -4,59 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>GloireMedia | Web3 Experience</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="https://upload-widget.cloudinary.com/global/all.js"></script>
-    <style>
-        /* Design TikTok Boss */
-        body { margin: 0; background: #000; color: #fff; overflow-x: hidden; font-family: sans-serif; }
-        .feed-container { height: 100vh; overflow-y: scroll; scroll-snap-type: y mandatory; }
-        .video-card { height: 100vh; scroll-snap-align: start; position: relative; display: flex; align-items: center; justify-content: center; }
-        .video-card video { width: 100%; height: 100%; object-fit: cover; }
-        
-        /* Overlay Social à la 1000242301.jpg */
-        .ui-overlay { position: absolute; bottom: 80px; right: 15px; display: flex; flex-direction: column; gap: 20px; align-items: center; }
-        .action-btn { background: rgba(0,0,0,0.5); border: none; color: white; padding: 10px; border-radius: 50%; cursor: pointer; }
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 60px; display: flex; justify-content: space-around; background: #000; border-top: 1px solid #333; align-items: center; z-index: 10; }
-    </style>
+    <!-- Chargement externe sécurisé -->
+    <script src="https://upload-widget.cloudinary.com/global/all.js" defer></script>
 </head>
 <body>
+    <div id="root"></div>
 
-    <div class="feed-container" id="grid">
-        <!-- Contenu injecté dynamiquement ici -->
-    </div>
-
-    <nav class="bottom-nav">
-        <span>🏠 Maison</span>
-        <span>🔍 Découvrir</span>
-        <button id="upload_widget" style="background: #fff; border-radius: 8px; padding: 5px 15px;">+</button>
-        <span>💬 Messages</span>
-        <span onclick="window.location.href='/profile'">👤 Moi</span>
-    </nav>
-
-    <script>
-        // Widget Cloudinary Pro
-        var myWidget = cloudinary.createUploadWidget({
-            cloudName: 'dvoya2e3o',
-            uploadPreset: 'gloiremedia_unsigned'
-        }, (error, result) => {
-            if (!error && result && result.event === "success") {
-                const grid = document.getElementById('grid');
-                const fileUrl = result.info.secure_url;
-                
-                // Injection dynamique style TikTok
-                grid.innerHTML += `
-                    <div class="video-card">
-                        <video src="${fileUrl}" autoplay loop muted playsinline></video>
-                        <div class="ui-overlay">
-                            <button class="action-btn">❤️</button>
-                            <button class="action-btn">💬</button>
-                            <button class="action-btn" onclick="alert('Retrait GloirePay activé')">💰</button>
-                        </div>
-                    </div>`;
-            }
-        });
-
-        document.getElementById("upload_widget").addEventListener("click", () => myWidget.open());
-    </script>
+    <!-- Le point d'entrée de votre application React/Vite -->
+    <script type="module" src="/src/main.jsx"></script>
 </body>
 </html>
