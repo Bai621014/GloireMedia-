@@ -1,6 +1,7 @@
 // monetbil.js
+// On récupère les clés que vous avez entrées dans Render
 const SERVICE_KEY = import.meta.env.VITE_MONETBIL_SERVICE_KEY;
-const PUBLIC_KEY = import.meta.env.VITE_MONETBIL_PUBLIC_KEY;
+const SECRET_KEY = import.meta.env.VITE_MONETBIL_SECRET;
 
 export const effectuerRetrait = async (amount, phone) => {
   try {
@@ -8,14 +9,13 @@ export const effectuerRetrait = async (amount, phone) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${SERVICE_KEY}`
+        'Authorization': `Bearer ${SERVICE_KEY}` // Utilisation de la Service Key
       },
       body: JSON.stringify({
         amount: amount,
         phone: phone,
         currency: 'XAF',
-        public_key: PUBLIC_KEY,
-        // Ajoutez ici les détails requis par la documentation Monetbil
+        secret: SECRET_KEY // Utilisation du Secret
       })
     });
 
