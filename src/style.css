@@ -1,16 +1,17 @@
-/* Force le fond à être sombre pour voir le texte */
+/* Nettoyage total du body pour laisser React travailler */
 body {
-  background-color: #111827 !important; 
   margin: 0;
   padding: 0;
+  min-height: 100vh;
+  /* On enlève le !important et le background forcé ici */
+  background-color: #030712; 
+  font-family: sans-serif;
+}
+
+#root {
+  width: 100%;
   min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-/* Force l'affichage du conteneur root */
-#root {
-  width: 100%;
-  display: block;
 }
