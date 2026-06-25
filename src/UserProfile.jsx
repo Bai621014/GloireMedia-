@@ -45,3 +45,11 @@ export default function UserProfile() {
     </div>
   );
       }
+
+git rm -rf --cached node_modules
+echo "node_modules" > .gitignore
+echo "dist" >> .gitignore
+echo ".env" >> .gitignore
+git add .
+git commit -m "fix: structure propre et ignore node_modules"
+git push
