@@ -1,12 +1,36 @@
-import { useState } from 'react';
+Import { useState } from 'react';
+import { createClient } from '@supabase/supabase-js';
+
+// Initialisation sécurisée via les variables d'environnement de Render
+const supabase = createClient(
+  process.env.REACT_APP_SUPABASE_URL, 
+  process.env.REACT_APP_SUPABASE_ANON_KEY
+);
 
 export default function UserProfile() {
   const [balance] = useState(500);
   const rate = 100;
   const phoneNumber = "+235 62 10 14 68";
+  const amountToWithdraw = 50000; // Le montant fixe pour votre retrait
 
-  const handleWithdraw = () => {
-    alert("Demande de retrait enregistrée pour le " + phoneNumber);
+  const handleWithdraw = async () => {
+    // 1. Insertion dans la base de données
+    const { data, error } = await supabase
+      .from('withdrawals')
+      .insert([
+        { 
+          amount: amountToWithdraw, 
+          phone: phoneNumber, 
+          status: 'pending' 
+        },
+      ]);
+
+    if (error) {
+      alert("Erreur : " + error.message);
+    } else {
+      // 2. Confirmation visuelle pour l'utilisateur
+      alert("Demande de " + amountToWithdraw.toLocaleString() + " FCFA enregistrée avec succès pour le " + phoneNumber);
+    }
   };
 
   return (
@@ -23,9 +47,12 @@ export default function UserProfile() {
         <h2 style={{ fontSize: '2em', color: '#ffffff' }}>{(balance * rate).toLocaleString()} FCFA</h2>
       </div>
 
-      <button onClick={handleWithdraw} style={{ width: '100%', maxWidth: '300px', padding: '15px', backgroundColor: '#3b82f6', color: 'white', border: 'none', borderRadius: '15px', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer' }}>
+      <button 
+        onClick={handleWithdraw} 
+        style={{ width: '100%', maxWidth: '300px', padding: '15px', backgroundColor: '#3b82f6', color: 'white', border: 'none', borderRadius: '15px', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer' }}
+      >
         Retrait Airtel {phoneNumber}
       </button>
     </div>
   );
-}
+                }
