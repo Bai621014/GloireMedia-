@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
-// Initialisation sécurisée via les variables d'environnement
+// Initialisation sécurisée via les variables d'environnement de Render
 const supabase = createClient(
   process.env.REACT_APP_SUPABASE_URL, 
   process.env.REACT_APP_SUPABASE_ANON_KEY
@@ -14,7 +14,6 @@ export default function UserProfile() {
   const amountToWithdraw = 50000;
 
   const handleWithdraw = async () => {
-    // Insertion dans la base de données
     const { error } = await supabase
       .from('withdrawals')
       .insert([
@@ -36,19 +35,16 @@ export default function UserProfile() {
     <div style={{ backgroundColor: '#030712', color: '#ffffff', minHeight: '100vh', padding: '20px', fontFamily: 'sans-serif', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       <h1 style={{ marginBottom: '30px' }}>GLOIREMEDIA</h1>
       
-      {/* Affichage du solde */}
       <div style={{ background: '#1e293b', padding: '20px', borderRadius: '20px', width: '100%', maxWidth: '300px', textAlign: 'center', marginBottom: '20px' }}>
         <p style={{ color: '#94a3b8' }}>Solde actuel :</p>
         <h2 style={{ fontSize: '2.5em', color: '#22c55e' }}>{balance} GC</h2>
       </div>
 
-      {/* Affichage de la valeur en FCFA */}
       <div style={{ background: '#1e293b', padding: '15px', borderRadius: '20px', width: '100%', maxWidth: '300px', textAlign: 'center', marginBottom: '30px' }}>
         <p style={{ color: '#94a3b8' }}>Valeur en FCFA :</p>
         <h2 style={{ fontSize: '2em', color: '#ffffff' }}>{(balance * rate).toLocaleString()} FCFA</h2>
       </div>
 
-      {/* Bouton de retrait */}
       <button 
         onClick={handleWithdraw} 
         style={{ width: '100%', maxWidth: '300px', padding: '15px', backgroundColor: '#3b82f6', color: 'white', border: 'none', borderRadius: '15px', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer' }}
@@ -57,4 +53,4 @@ export default function UserProfile() {
       </button>
     </div>
   );
-        }
+}
