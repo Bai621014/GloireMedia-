@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import UserProfile from './UserProfile';
-// Si vous avez un fichier CSS, gardez cette ligne. Sinon, supprimez-la.
-import './index.css'; 
+// Si vous utilisez style.css, gardez cette ligne. Sinon, supprimez-la.
+import './style.css'; 
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
