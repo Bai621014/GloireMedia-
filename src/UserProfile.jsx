@@ -1,4 +1,4 @@
-Import { useState } from 'react';
+import { useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
 // Initialisation sécurisée via les variables d'environnement de Render
@@ -11,11 +11,11 @@ export default function UserProfile() {
   const [balance] = useState(500);
   const rate = 100;
   const phoneNumber = "+235 62 10 14 68";
-  const amountToWithdraw = 50000; // Le montant fixe pour votre retrait
+  const amountToWithdraw = 50000;
 
   const handleWithdraw = async () => {
-    // 1. Insertion dans la base de données
-    const { data, error } = await supabase
+    // Insertion sécurisée dans votre table 'withdrawals'
+    const { error } = await supabase
       .from('withdrawals')
       .insert([
         { 
@@ -26,9 +26,8 @@ export default function UserProfile() {
       ]);
 
     if (error) {
-      alert("Erreur : " + error.message);
+      alert("Erreur lors de l'envoi : " + error.message);
     } else {
-      // 2. Confirmation visuelle pour l'utilisateur
       alert("Demande de " + amountToWithdraw.toLocaleString() + " FCFA enregistrée avec succès pour le " + phoneNumber);
     }
   };
@@ -55,4 +54,4 @@ export default function UserProfile() {
       </button>
     </div>
   );
-                }
+}
