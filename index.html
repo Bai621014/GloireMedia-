@@ -4,108 +4,54 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GloireMedia - Retrait Airtel TD</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script> <!-- CHANGÉ CDN -->
   <style>
-    :root { --bg: #0f172a; --card: #1e293b; --text: #e2e8f0; --accent: #22c55e; --danger: #ef4444; --warn: #f59e0b; }
+    :root { --bg: #0f172a; --card: #1e293b; --text: #e2e8f0; --accent: #22c55e; --danger: #ef4444; }
     body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); display: flex; justify-content: center; padding: 20px; margin: 0; min-height: 100vh; align-items: center; }
-    .card { background: var(--card); padding: 24px; border-radius: 16px; width: 100%; max-width: 420px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+    .card { background: var(--card); padding: 24px; border-radius: 16px; width: 100%; max-width: 420px; }
     h1 { font-size: 20px; margin: 0 0 16px; text-align: center; }
-    h3 { font-size: 16px; margin: 20px 0 8px; }
     label { font-size: 14px; opacity: 0.8; display: block; margin-bottom: 6px; }
     input, button { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #334155; background: #0b1220; color: var(--text); font-size: 16px; box-sizing: border-box; }
-    input:focus { outline: 2px solid var(--accent); border-color: transparent; }
-    button { background: var(--accent); color: #0f172a; font-weight: 700; border: none; cursor: pointer; margin-top: 12px; transition: 0.2s; }
-    button:hover:not(:disabled) { filter: brightness(1.1); }
-    button:disabled { background: #475569; cursor: not-allowed; }
-    .info { font-size: 13px; opacity: 0.7; margin: 8px 0; }
-    .kpi { display: flex; justify-content: space-between; background: #0b1220; padding: 10px 12px; border-radius: 8px; margin-bottom: 12px; font-size: 14px; }
-    .solde { font-size:28px; font-weight:bold; color:#4ade80; text-align:center; }
+    button { background: var(--accent); color: #0f172a; font-weight: 700; border: none; cursor: pointer; margin-top: 12px; }
+    button:disabled { background: #475569; }
     .alert { margin-top: 12px; padding: 12px; border-radius: 10px; font-size: 14px; display: none; }
-    .alert.ok { background: rgba(34,197,94,0.1); border: 1px solid var(--accent); display: block; }
     .alert.err { background: rgba(239,68,68,0.1); border: 1px solid var(--danger); display: block; }
-    .alert.warn { background: rgba(245,158,11,0.1); border: 1px solid var(--warn); display: block; }
-    table { width: 100%; margin-top: 12px; border-collapse: collapse; font-size: 13px; }
-    th, td { text-align: left; padding: 8px; border-bottom: 1px solid #334155; }
-    .statut.paye { color: var(--accent); font-weight: 700; } .statut.pending { color: var(--warn); } .statut.echoue, .statut.annule { color: var(--danger); }
   </style>
 </head>
 <body>
   <div class="card">
     <h1>Retrait Airtel Money TD</h1>
-    
     <div id="authBox">
-      <label>Email</label>
-      <input id="email" type="email" placeholder="ton@email.com" autocomplete="email">
-      <label>Mot de passe</label>
-      <input id="password" type="password" placeholder="******" autocomplete="current-password">
+      <label>Email</label><input id="email" type="email" placeholder="ton@email.com">
+      <label>Mot de passe</label><input id="password" type="password" placeholder="******">
+      <button id="signupBtn" style="background:#334155;">Créer un compte</button>
       <button id="loginBtn">Se connecter</button>
-      <button id="signupBtn" style="background:#334155; color:var(--text);">Créer un compte</button>
     </div>
-
-    <div id="retraitBox" style="display:none;">
-      <div class="kpi">
-        <span>Solde: <b><span id="soldeGC">0</span> GC</b></span>
-        <span class="solde"><b><span id="soldeFCFA">0</span> FCFA</b></span>
-      </div>
-      <div class="kpi">
-        <span>Retiré aujourd'hui</span>
-        <span><b><span id="retireAuj">0</span> / 500,000 FCFA</b></span>
-      </div>
-      
-      <label>Montant FCFA</label>
-      <input id="amount_fcfa" type="number" value="50000" min="50000" step="100" inputmode="numeric">
-      <div class="info">Taux: 1 GC = 100 FCFA. Montant multiple de 100.</div>
-      
-      <label>Numéro Airtel TD</label>
-      <input id="phone" type="tel" placeholder="62101468" inputmode="tel">
-      <div class="info">Sans +235, sans espace</div>
-
-      <button id="retirerBtn">Retirer</button>
-      <button id="logoutBtn" style="background:#334155; color:var(--text); margin-top:8px;">Déconnexion</button>
-
-      <h3>Historique 10 derniers</h3>
-      <table id="historiqueTable">
-        <thead><tr><th>Date</th><th>Montant</th><th>Statut</th></tr></thead>
-        <tbody id="historiqueBody"><tr><td colspan="3">Chargement...</td></tr></tbody>
-      </table>
-    </div>
-
+    <div id="retraitBox" style="display:none;"><h1>Connecté ✅</h1></div>
     <div id="alert" class="alert"></div>
   </div>
 
   <script>
-    // === CONFIG SUPABASE OFFICIELLE === 20H650
     const SUPABASE_URL = 'https://sshwabalnigrkazgzopr.supabase.co' 
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNzaHdhYmFsbmlncmthemd6b3ByIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4NzUyNjEsImV4cCI6MjA5NzQ1MTI2MX0.lqfEtWFVl4y4N1WfVwsCqdT3OHljZ5LkBMpEaa52QNQ' 
-    const PLAFOND_JOUR = 500000;
-    const TAUX = 100;
     
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     const alertBox = document.getElementById('alert');
-
-    const showAlert = (msg, type = 'ok') => {
-      alertBox.textContent = msg;
+    const showAlert = (msg, type = 'err') => {
+      alertBox.textContent = msg; // Affiche l'erreur direct
       alertBox.className = `alert ${type}`;
-      setTimeout(() => alertBox.className = 'alert', 5000);
+      console.log("SUPABASE ERROR:", msg); // Pour voir dans Chrome > ... > Outils Dev
     }
 
-    // Auto-login si session existe
-    supabase.auth.onAuthStateChange((event, session) => {
-      if (session) loadUI();
-      else {
-        document.getElementById('authBox').style.display = 'block'; 
-        document.getElementById('retraitBox').style.display = 'none'; 
-        document.getElementById('loginBtn').disabled = false;
-      }
-    });
+    // ATTENDS que supabase charge
+    if(typeof supabase === 'undefined'){ showAlert('Erreur: Supabase JS ne charge pas. Mauvais internet 0.06 Ko/s'); }
+    const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     document.getElementById('signupBtn').onclick = async () => {
       const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value;
-      if(!email || !password) { showAlert('Email + MDP requis', 'err'); return; }
-      const { error } = await supabase.auth.signUp({ email, password });
-      if (error) showAlert('Erreur: ' + error.message, 'err');
-      else showAlert('Compte créé. Connecte-toi.', 'ok');
+      const { error } = await client.auth.signUp({ email, password });
+      if (error) showAlert('Créer compte: ' + error.message);
+      else showAlert('Compte créé. Clique Se connecter.', 'ok');
     }
 
     document.getElementById('loginBtn').onclick = async () => {
@@ -113,82 +59,15 @@
       btn.disabled = true;
       const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value;
-      if(!email || !password) { showAlert('Email + MDP requis', 'err'); btn.disabled = false; return; }
       
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) { showAlert('Erreur: ' + error.message, 'err'); btn.disabled = false; return; }
-      // loadUI() sera appelé par onAuthStateChange
-    }
+      const { data, error } = await client.auth.signInWithPassword({ email, password });
+      btn.disabled = false; // Débloque toujours
 
-    document.getElementById('logoutBtn').onclick = async () => {
-      await supabase.auth.signOut();
-    }
-
-    async function loadUI() {
-      const { data: { user } = await supabase.auth.getUser();
-      if (!user) return;
-
+      if (error) { showAlert('Login: ' + error.message); return; }
+      
       document.getElementById('authBox').style.display = 'none';
       document.getElementById('retraitBox').style.display = 'block';
-
-      const { data: wallet } = await supabase.from('wallets').select('gloirecoin').eq('user_id', user.id).single();
-      const gc = wallet?.gloirecoin || 0;
-      document.getElementById('soldeGC').textContent = gc.toLocaleString('fr-FR');
-      document.getElementById('soldeFCFA').textContent = (gc * TAUX).toLocaleString('fr-FR');
-
-      const todayStart = new Date().toLocaleDateString('en-CA', { timeZone: 'Africa/Ndjamena' });
-      const { data: retraitsJour } = await supabase.from('retraits')
-        .select('amount_fcfa').eq('user_id', user.id).eq('statut', 'paye')
-        .gte('created_at', `${todayStart}T00:00:00+01:00`);
-      const totalJour = retraitsJour?.reduce((s, r) => s + r.amount_fcfa, 0) || 0;
-      document.getElementById('retireAuj').textContent = totalJour.toLocaleString('fr-FR');
-
-      const { data: histo } = await supabase.from('retraits')
-        .select('amount_fcfa, statut, created_at').eq('user_id', user.id)
-        .order('created_at', { ascending: false }).limit(10);
-      
-      const tbody = document.getElementById('historiqueBody');
-      tbody.innerHTML = histo?.length ? histo.map(r => `
-        <tr>
-          <td>${new Date(r.created_at).toLocaleDateString('fr-FR', { timeZone: 'Africa/Ndjamena' })}</td>
-          <td>${r.amount_fcfa.toLocaleString('fr-FR')} FCFA</td>
-          <td class="statut ${r.statut}">${r.statut}</td>
-        </tr>
-      `).join('') : '<tr><td colspan="3">Aucun retrait</td></tr>';
     }
-
-    document.getElementById('retirerBtn').onclick = async () => {
-      const btn = document.getElementById('retirerBtn');
-      const amount_fcfa = parseInt(document.getElementById('amount_fcfa').value);
-      const phone = document.getElementById('phone').value.replace(/\D/g, '');
-      const retireAuj = parseInt(document.getElementById('retireAuj').textContent.replace(/\D/g, ''));
-
-      if (isNaN(amount_fcfa) || amount_fcfa < 50000) return showAlert('Min: 50000 FCFA', 'err');
-      if (amount_fcfa % TAUX !== 0) return showAlert('Montant doit être multiple de 100', 'err');
-      if (phone.length < 8) return showAlert('Numéro invalide', 'err');
-      if (retireAuj + amount_fcfa > PLAFOND_JOUR) {
-        return showAlert(`Plafond 500000 FCFA/jour dépassé. Reste: ${(PLAFOND_JOUR - retireAuj).toLocaleString('fr-FR')} FCFA`, 'warn');
-      }
-
-      btn.disabled = true;
-      btn.textContent = 'Envoi en cours...';
-
-      const { data, error } = await supabase.functions.invoke('effectuer-retrait', {
-        body: { amount_fcfa, phone }
-      });
-
-      if (error || !data?.success) {
-        showAlert(error?.message || data?.message || 'Erreur serveur', 'err');
-      } else {
-        showAlert(data.message, 'ok');
-        loadUI(); 
-      }
-      
-      btn.disabled = false;
-      btn.textContent = 'Retirer';
-    }
-
-    loadUI(); // Charge au démarrage
   </script>
 </body>
 </html>
