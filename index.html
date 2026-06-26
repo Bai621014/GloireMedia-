@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GloireMedia - Retrait Airtel TD</title>
+  <script src="https://esm.sh/@supabase/supabase-js@2"></script>
   <style>
     :root { --bg: #0f172a; --card: #1e293b; --text: #e2e8f0; --accent: #22c55e; --danger: #ef4444; }
     body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); display: flex; justify-content: center; padding: 20px; margin: 0; min-height: 100vh; align-items: center; }
@@ -12,7 +13,7 @@
     label { font-size: 14px; opacity: 0.8; display: block; margin-bottom: 6px; }
     input, button { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #334155; background: #0b1220; color: var(--text); font-size: 16px; box-sizing: border-box; }
     button { background: var(--accent); color: #0f172a; font-weight: 700; border: none; cursor: pointer; margin-top: 12px; }
-    button:disabled { background: #475569; }
+    #signupBtn { background: #334155; color: var(--text); }
     .alert { margin-top: 12px; padding: 12px; border-radius: 10px; font-size: 14px; display: none; }
     .alert.err { background: rgba(239,68,68,0.1); border: 1px solid var(--danger); display: block; }
     .alert.ok { background: rgba(34,197,94,0.1); border: 1px solid var(--accent); display: block; }
@@ -23,8 +24,8 @@
     <h1>Retrait Airtel Money TD</h1>
     <div id="authBox">
       <label>Email</label><input id="email" type="email" value="eduboostgrace@gmail.com">
-      <label>Mot de passe</label><input id="password" type="password">
-      <button id="signupBtn" style="background:#334155;">Créer un compte</button>
+      <label>Mot de passe</label><input id="password" type="password" value="Gloire2026">
+      <button id="signupBtn">Créer un compte</button>
       <button id="loginBtn">Se connecter</button>
     </div>
     <div id="retraitBox" style="display:none;"><h1>Connecté ✅</h1></div>
@@ -32,8 +33,7 @@
   </div>
 
 <script type="module">
-  import { createClient } from 'https://esm.sh/@supabase/supabase-js@2' // ESM direct, pas de CDN
-
+  import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
   const SUPABASE_URL = 'https://sshwabalnigrkazgzopr.supabase.co' 
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNzaHdhYmFsbmlncmthemd6b3ByIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4NzUyNjEsImV4cCI6MjA5NzQ1MTI2MX0.lqfEtWFVl4y4N1WfVwsCqdT3OHljZ5LkBMpEaa52QNQ' 
   const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -42,27 +42,22 @@
   const showAlert = (msg, type = 'err') => {
     alertBox.textContent = msg;
     alertBox.className = `alert ${type}`;
-    alert(msg); // Force un pop-up sur Redmi pour voir l’erreur
+    alert(msg); 
   }
 
   document.getElementById('signupBtn').onclick = async () => {
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value;
-    const { error } = await supabase.auth.signUp({ email, password });
-    if (error) showAlert('Créer compte: ' + error.message);
-    else showAlert('Compte créé. Connecte-toi.', 'ok');
+    const { data, error } = await supabase.auth.signUp({ email, password }); // SIGNUP ICI
+    if (error) showAlert('Erreur Création: ' + error.message);
+    else showAlert('Compte créé ✅ Connecte-toi maintenant.', 'ok');
   }
 
   document.getElementById('loginBtn').onclick = async () => {
-    const btn = document.getElementById('loginBtn');
-    btn.disabled = true;
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value;
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    btn.disabled = false;
-
-    if (error) { showAlert('Login: ' + error.message); return; }
-    
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password }); // LOGIN ICI
+    if (error) { showAlert('Erreur Login: ' + error.message); return; }
     document.getElementById('authBox').style.display = 'none';
     document.getElementById('retraitBox').style.display = 'block';
   }
