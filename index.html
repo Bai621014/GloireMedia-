@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GloireMedia - Retrait</title>
+  <title>GloireMedia - Retrait Airtel TD</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root { --bg: #0f172a; --card: #1e293b; --text: #e2e8f0; --accent: #22c55e; --danger: #ef4444; --warn: #f59e0b; }
-    body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); display: flex; justify-content: center; padding: 20px; margin: 0; }
+    body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); display: flex; justify-content: center; padding: 20px; margin: 0; min-height: 100vh; align-items: center; }
     .card { background: var(--card); padding: 24px; border-radius: 16px; width: 100%; max-width: 420px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
     h1 { font-size: 20px; margin: 0 0 16px; text-align: center; }
     h3 { font-size: 16px; margin: 20px 0 8px; }
@@ -19,6 +19,7 @@
     button:disabled { background: #475569; cursor: not-allowed; }
     .info { font-size: 13px; opacity: 0.7; margin: 8px 0; }
     .kpi { display: flex; justify-content: space-between; background: #0b1220; padding: 10px 12px; border-radius: 8px; margin-bottom: 12px; font-size: 14px; }
+    .solde { font-size:28px; font-weight:bold; color:#4ade80; text-align:center; }
     .alert { margin-top: 12px; padding: 12px; border-radius: 10px; font-size: 14px; display: none; }
     .alert.ok { background: rgba(34,197,94,0.1); border: 1px solid var(--accent); display: block; }
     .alert.err { background: rgba(239,68,68,0.1); border: 1px solid var(--danger); display: block; }
@@ -34,7 +35,7 @@
     
     <div id="authBox">
       <label>Email</label>
-      <input id="email" type="email" placeholder="ton@email.com" autocomplete="email">
+      <input id="email" type="email" placeholder="ton@email.com" value="bainimanengandjei@gmail.com" autocomplete="email">
       <label>Mot de passe</label>
       <input id="password" type="password" placeholder="******" autocomplete="current-password">
       <button id="loginBtn">Se connecter</button>
@@ -43,11 +44,11 @@
     <div id="retraitBox" style="display:none;">
       <div class="kpi">
         <span>Solde: <b><span id="soldeGC">0</span> GC</b></span>
-        <span><b><span id="soldeFCFA">0</span> FCFA</b></span>
+        <span class="solde"><b><span id="soldeFCFA">0</span> FCFA</b></span>
       </div>
       <div class="kpi">
         <span>Retiré aujourd'hui</span>
-        <span><b><span id="retireAuj">0</span> / 500000 FCFA</b></span>
+        <span><b><span id="retireAuj">0</span> / 500,000 FCFA</b></span>
       </div>
       
       <label>Montant FCFA</label>
@@ -72,7 +73,7 @@
   </div>
 
   <script>
-    // CONFIG: CLÉS PUBLIQUES UNIQUEMENT
+    // === CONFIG SUPABASE OFFICIELLE === 20H542
     const SUPABASE_URL = 'https://sshwabalnigrkazgzopr.supabase.co' 
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNzaHdhYmFsbmlncmthemd6b3ByIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4NzUyNjEsImV4cCI6MjA5NzQ1MTI2MX0.lqfEtWFVl4y4N1WfVwsCqdT3OHljZ5LkBMpEaa52QNQ' 
     const PLAFOND_JOUR = 500000;
@@ -84,15 +85,18 @@
     const showAlert = (msg, type = 'ok') => {
       alertBox.textContent = msg;
       alertBox.className = `alert ${type}`;
-      setTimeout(() => alertBox.className = 'alert', 4000);
+      setTimeout(() => alertBox.className = 'alert', 5000);
     }
 
     document.getElementById('loginBtn').onclick = async () => {
+      const btn = document.getElementById('loginBtn');
+      btn.disabled = true;
       const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value;
-      if(!email || !password) return showAlert('Email + MDP requis', 'err');
+      if(!email || !password) { showAlert('Email + MDP requis', 'err'); btn.disabled = false; return; }
+      
       const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) return showAlert(error.message, 'err');
+      if (error) { showAlert('Erreur: ' + error.message, 'err'); btn.disabled = false; return; }
       loadUI();
     }
 
@@ -102,8 +106,13 @@
     }
 
     async function loadUI() {
-      const { data: { user } = await supabase.auth.getUser();
-      if (!user) { document.getElementById('authBox').style.display = 'block'; document.getElementById('retraitBox').style.display = 'none'; return; }
+      const { data: { user }, error: userError } = await supabase.auth.getUser(); // <-- BUG FIX ICI
+      if (userError || !user) { 
+        document.getElementById('authBox').style.display = 'block'; 
+        document.getElementById('retraitBox').style.display = 'none'; 
+        document.getElementById('loginBtn').disabled = false;
+        return; 
+      }
 
       document.getElementById('authBox').style.display = 'none';
       document.getElementById('retraitBox').style.display = 'block';
@@ -168,4 +177,4 @@
     loadUI();
   </script>
 </body>
-  </html>
+      </html>
