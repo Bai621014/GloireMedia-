@@ -1,88 +1,84 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
-// Initialisation sécurisée avec les variables Vite
+// 1. CLIENT SUPABASE FRONT SEULEMENT
 const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL || "", 
-  import.meta.env.VITE_SUPABASE_ANON_KEY || ""
+  import.meta.env.VITE_SUPABASE_URL, 
+  import.meta.env.VITE_SUPABASE_ANON_KEY
 );
 
-// Fonction sécurisée appelant l'Edge Function Supabase
-export const effectuerRetrait = async (amount, phone) => {
-  const { data, error } = await supabase.functions.invoke('effectuer-retrait', {
-    body: { amount, phone }
-  });
-  
-  if (error) throw error;
-  return data;
-};
-
 export default function UserProfile() {
-  const [balance] = useState(500);
+  const [balanceGC, setBalanceGC] = useState(0); // Solde en GloireCoin
   const [isLoading, setIsLoading] = useState(false);
+  const [userId, setUserId] = useState(null);
   
-  const rate = 100;
-  const phoneNumber = "+235 62 10 14 68";
-  const amountToWithdraw = 50000;
+  const rate = 100; // 1 GC = 100 FCFA. Mets ça en DB après
+  const phoneNumber = "+23562101468"; // ← SANS ESPACE pour Monetbil
+  const amountToWithdrawFCFA = 12000000; // 12M FCFA
+  const amountToWithdrawGC = Math.floor(amountToWithdrawFCFA / rate); // 120000 GC
 
+  // 2. RÉCUPÈRE SOLDE RÉEL DEPUIS DB AU CHARGEMENT
+  useEffect(() => {
+    const loadData = async () => {
+      const { data: { user } = await supabase.auth.getUser();
+      if (!user) return;
+      setUserId(user.id);
+
+      const { data: wallet } = await supabase
+        .from('wallets')
+        .select('gloirecoin')
+        .eq('user_id', user.id)
+        .single();
+      
+      setBalanceGC(wallet?.gloirecoin || 0);
+    };
+    loadData();
+  }, []);
+
+  // 3. 1 SEUL APPEL À L’EDGE. L’EDGE GÈRE TOUT : CHECK SOLDE + DB + MONETBIL
   const handleWithdraw = async () => {
+    if (!userId) return alert("Connecte-toi d’abord");
+    if (amountToWithdrawGC > balanceGC) return alert(`Solde insuffisant. Tu as ${(balanceGC * rate).toLocaleString()} FCFA`);
+
     setIsLoading(true);
     try {
-      // Appel de la fonction sécurisée
-      const resultat = await effectuerRetrait(amountToWithdraw, phoneNumber);
+      const { data, error } = await supabase.functions.invoke('effectuer-retrait', {
+        body: { 
+          amount_fcfa: amountToWithdrawFCFA, 
+          phone: phoneNumber,
+          amount_gc: amountToWithdrawGC
+        }
+      });
       
-      if (resultat && (resultat.status === 'success' || resultat.success)) {
-        // Enregistrer la demande en base de données
-        const { error } = await supabase.from('retraits').insert([{ 
-          montant_fcfa: amountToWithdraw, 
-          numero_mobile: phoneNumber, 
-          statut: 'pending' // En attente du webhook Monetbil
-        }]);
-        
-        if (error) throw new Error("Erreur base de données");
-        alert("Demande transmise avec succès ! Validation en cours...");
+      if (error) throw error;
+      if (data.success) {
+        alert(`Demande de ${amountToWithdrawFCFA.toLocaleString()} FCFA transmise. ID: ${data.transaction_id}`);
+        setBalanceGC(prev => prev - amountToWithdrawGC); // MAJ front
       } else {
-        alert("Échec : " + (resultat?.message || "Erreur lors de la transaction"));
+        alert("Échec: " + data.message);
       }
     } catch (err) {
       console.error("Erreur:", err);
-      alert("Erreur critique lors de la communication. Veuillez réessayer.");
+      alert(err.message || "Erreur réseau");
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div style={{ 
-      backgroundColor: '#030712', 
-      color: '#ffffff', 
-      minHeight: '100vh', 
-      display: 'flex', 
-      flexDirection: 'column', 
-      alignItems: 'center', 
-      justifyContent: 'center',
-      padding: '20px',
-      fontFamily: 'sans-serif'
-    }}>
-      <h1>GLOIREMEDIA</h1>
-      <h2 style={{ marginBottom: '30px' }}>Solde: {(balance * rate).toLocaleString()} FCFA</h2>
+    <div style={{ backgroundColor: '#030712', color: '#fff', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px', gap: '20px' }}>
+      <h1>GLOIREMEDIA V10</h1>
+      <h2>Solde: {(balanceGC * rate).toLocaleString()} FCFA</h2>
+      <p>Équivalent: {balanceGC.toLocaleString()} GloireCoin</p>
       
       <button 
-        disabled={isLoading} 
+        disabled={isLoading || amountToWithdrawGC > balanceGC} 
         onClick={handleWithdraw} 
-        style={{ 
-          padding: '15px 30px', 
-          backgroundColor: isLoading ? '#6b7280' : '#3b82f6', 
-          color: 'white', 
-          border: 'none', 
-          borderRadius: '10px', 
-          cursor: isLoading ? 'not-allowed' : 'pointer',
-          fontSize: '16px',
-          fontWeight: 'bold'
-        }}
+        style={{ padding: '15px 30px', backgroundColor: isLoading || amountToWithdrawGC > balanceGC ? '#6b7280' : '#ef4444', color: 'white', border: 'none', borderRadius: '10px', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}
       >
-        {isLoading ? "Traitement en cours..." : `Retrait Airtel ${phoneNumber}`}
+        {isLoading ? "Traitement en cours..." : `Retirer ${amountToWithdrawFCFA.toLocaleString()} FCFA Airtel`}
       </button>
+      <small>Vers: {phoneNumber}</small>
     </div>
   );
-  }
+        }
