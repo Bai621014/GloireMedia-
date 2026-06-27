@@ -1,9 +1,8 @@
-<!DOCTYPE html>
-<html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GloireMedia Retrait</title><script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GloireMedia</title><script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <style>body{background:#0a0a0a;color:#fff;font-family:system-ui;display:flex;justify-content:center;align-items:center;height:100vh;margin:0}.box{background:#1a1a1a;padding:24px;border-radius:16px;width:95%;max-width:400px;border:1px solid #22c55e}h1{color:#22c55e;text-align:center;margin:0;font-size:24px}.solde{font-size:48px;color:#22c55e;text-align:center;font-weight:900;margin:15px 0}input,button{width:100%;padding:18px;margin-top:12px;border-radius:12px;border:0;font-size:18px;font-weight:700;box-sizing:border-box}input{background:#2a2a2a;color:#fff;text-align:center}button{background:#22c55e;color:#000;cursor:pointer}.msg{margin-top:15px;text-align:center;font-size:16px;min-height:24px}</style></head>
 <body><div class="box">
 <h1>💰 Retrait Rapide</h1>
-<div class="solde" id="s">10,000,000 FCFA</div>
+<div class="solde" id="s">Chargement...</div>
 <input id="n" type="tel" placeholder="Ton Numéro Airtel 66 XX" maxlength="10">
 <input id="m" type="number" placeholder="Montant à retirer" min="1000">
 <button onclick="ret()">ENVOYER RETRAIT</button>
@@ -11,6 +10,10 @@
 </div>
 <script>
 const s=supabase.createClient('https://sshwabalnigrkazgzopr.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNzaHdhYmFsbmlncmthemd6b3ByIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4NzUyNjEsImV4cCI6MjA5NzQ1MTI2MX0.lqfEtWFVl4y4N1WfVwsCqdT3OHljZ5LkBMpEaa52QNQ');
+const BOSS_ID='86e6844d-b70a-40dc-8db8-13e52bb45a71';
+
+async function load(){const{data}=await s.from('profiles').select('solde').eq('id',BOSS_ID).single();s.textContent=data.solde.toLocaleString()+' FCFA';}
+load();
 
 async function ret(){
 x.textContent='Traitement...'; x.style.color='#22c55e';
@@ -18,14 +21,13 @@ const numero=n.value.trim(); const montant=+m.value;
 if(!numero||numero.length<8)return x.textContent='❌ Mets un bon numéro';
 if(montant<1000)return x.textContent='❌ Min 1000 FCFA';
 
-const{data:{user}}=await s.auth.signInWithPassword({email:'eduboostgrace@gmail.com',password:'123456'});
-const{data}=await s.from('profiles').select('solde').eq('id',user.id).single();
-if(data.solde<montant)return x.textContent='❌ Tu n\'as que '+data.solde.toLocaleString()+' FCFA';
+const{data}=await s.from('profiles').select('solde').eq('id',BOSS_ID).single();
+if(data.solde<montant)return x.textContent='❌ Solde: '+data.solde.toLocaleString()+' FCFA';
 
-await s.from('retraits').insert({user_id:user.id,montant,numero,statut:'en_attente'});
-await s.from('profiles').update({solde:data.solde-montant}).eq('id',user.id);
+await s.from('retraits').insert({user_id:BOSS_ID,montant,numero,statut:'en_attente'});
+await s.from('profiles').update({solde:data.solde-montant}).eq('id',BOSS_ID);
 s.textContent=(data.solde-montant).toLocaleString()+' FCFA';
-x.textContent='✅ '+montant.toLocaleString()+' FCFA envoyé au '+numero+'. En cours...';
+x.textContent='✅ '+montant.toLocaleString()+' FCFA envoyé au '+numero;
 m.value='';
 }
 </script></body></html>
