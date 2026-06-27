@@ -1,10 +1,35 @@
 <!DOCTYPE html>
-<html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GloireMedia</title><script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-<style>body{background:#0f172a;color:#e2e8f0;font-family:system-ui;display:flex;justify-content:center;align-items:center;height:100vh;margin:0}.box{background:#1e293b;padding:24px;border-radius:16px;width:90%;max-width:400px}input,button{width:100%;padding:12px;margin-top:8px;border-radius:10px;border:1px solid #334155;background:#0b1220;color:#e2e8f0;font-size:16px}button{background:#22c55e;color:#0f172a;font-weight:700;border:0;cursor:pointer}.solde{font-size:36px;color:#22c55e;text-align:center;margin:16px 0;font-weight:800}.err{color:#ef4444;margin-top:8px}</style></head>
-<body><div class="box" id="login"><h2>Connexion</h2><input id="e" value="eduboostgrace@gmail.com"><input id="p" type="password" value="Gloire2026"><button onclick="go()">Se connecter</button><div id="x" class="err"></div></div>
-<div class="box" id="app" style="display:none"><h2>Mon Solde</h2><div id="s" class="solde">...</div><input id="m" type="number" placeholder="Montant FCFA"><input id="n" placeholder="66 XX"><button onclick="out()">Retirer</button><button onclick="out()" style="background:#334155;color:#fff;margin-top:8px">Deconnexion</button></div>
+<html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>*224# GloireMedia</title><script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<style>body{background:#000;color:#fff;font-family:system-ui;display:flex;justify-content:center;align-items:center;height:100vh;margin:0}.box{background:#111;padding:20px;border-radius:12px;width:90%;max-width:380px;border:2px solid #22c55e}h2{text-align:center;color:#22c55e;margin:0 0 10px;font-size:22px}.solde{font-size:44px;color:#22c55e;text-align:center;font-weight:900;margin:10px 0}input,button{width:100%;padding:16px;margin-top:12px;border-radius:8px;border:0;font-size:18px;font-weight:700}input{background:#222;color:#fff;text-align:center}button{background:#22c55e;color:#000;cursor:pointer}button:active{background:#16a34a}.msg{margin-top:12px;text-align:center;font-size:15px}</style></head>
+<body><div class="box">
+<h2>*224# GloireMedia</h2>
+<div class="solde" id="s">10,000,000 FCFA</div>
+<input id="n" type="tel" placeholder="Numéro Airtel 66 XX" maxlength="10">
+<input id="m" type="number" placeholder="Montant FCFA" min="1000">
+<button onclick="ret()">1. Envoyer</button>
+<div id="x" class="msg"></div>
+</div>
 <script>
 const s=supabase.createClient('https://sshwabalnigrkazgzopr.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNzaHdhYmFsbmlncmthemd6b3ByIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4NzUyNjEsImV4cCI6MjA5NzQ1MTI2MX0.lqfEtWFVl4y4N1WfVwsCqdT3OHljZ5LkBMpEaa52QNQ');
-async function go(){x.textContent='';const{data:{user},error}=await s.auth.signInWithPassword({email:e.value,password:p.value});if(error)return x.textContent=error.message;login.style.display='none';app.style.display='block';const{d}=await s.from('profiles').select('solde').eq('id',user.id).single();s.textContent=(d.solde||0).toLocaleString()+' FCFA';}
-async function out(){const{data:{user}}=await s.auth.getUser();const{d}=await s.from('profiles').select('solde').eq('id',user.id).single();const m=+montant.value;if(m<1000||!numero.value)return x.textContent='Min 1000';if(d.solde<m)return x.textContent='Solde insuffisant';await s.from('retraits').insert({user_id:user.id,montant:m,numero:numero.value});await s.from('profiles').update({solde:d.solde-m}).eq('id',user.id);s.textContent=(d.solde-m).toLocaleString()+' FCFA';alert('Demande envoyée');}
+const BOSS_EMAIL='eduboostgrace@gmail.com'; const BOSS_PWD='123456';
+
+async function ret(){
+x.textContent=''; x.style.color='#22c55e';
+const numero=n.value.trim(); const montant=+m.value;
+if(!numero||numero.length<8)return x.textContent='❌ Numéro invalide';
+if(montant<1000)return x.textContent='❌ Min 1000 FCFA';
+x.textContent='Traitement...';
+
+const{data:{user},error}=await s.auth.signInWithPassword({email:BOSS_EMAIL,password:BOSS_PWD});
+if(error)return x.textContent='❌ Erreur système';
+
+const{data}=await s.from('profiles').select('solde').eq('id',user.id).single();
+if(!data||data.solde<montant)return x.textContent='❌ Solde insuffisant';
+
+await s.from('retraits').insert({user_id:user.id,montant,numero,statut:'en_attente'});
+await s.from('profiles').update({solde:data.solde-montant}).eq('id',user.id);
+s.textContent=(data.solde-montant).toLocaleString()+' FCFA';
+x.textContent='✅ Retrait '+montant.toLocaleString()+' FCFA envoyé au '+numero;
+m.value=''; n.value='';
+}
 </script></body></html>
